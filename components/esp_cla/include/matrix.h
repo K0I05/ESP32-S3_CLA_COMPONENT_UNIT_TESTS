@@ -116,8 +116,8 @@ typedef cla_matrix_qr_t* cla_matrix_qr_ptr_t;
 /**
  * @brief Instantiates a matrix by the number of rows and number of columns.
  * 
- * @param num_rows The number of rows (maximum rows supported is 128) that should be created for the matrix.
- * @param num_cols The number of columns (maximum columns supported is 128) that should be created for the matrix.
+ * @param num_rows The number of rows (maximum rows supported is 32,767) that should be created for the matrix.
+ * @param num_cols The number of columns (maximum columns supported is 32,767) that should be created for the matrix.
  * @param m An instantiated matrix structure.
  * @return esp_err_t ESP_OK on success.
  */
@@ -239,10 +239,12 @@ esp_err_t cla_matrix_lup_copy(const cla_matrix_lup_ptr_t m_lup_src, cla_matrix_l
 /**
  * @brief Instantiates a QR decomposition structure from orthogonal and upper triangular matrices.
  * 
+ * @param m_q 
+ * @param m_r 
  * @param m_qr An instantiated QR decomposition matrix structure.
  * @return esp_err_t ESP_OK on success.
  */
-esp_err_t cla_matrix_qr_create(cla_matrix_qr_ptr_t *const m_qr);
+esp_err_t cla_matrix_qr_create(const cla_matrix_ptr_t m_q, const cla_matrix_ptr_t m_r, cla_matrix_qr_ptr_t *const m_qr);
 
 /**
  * @brief Deletes a QR decomposition matrix instance to free memory.
@@ -277,10 +279,10 @@ esp_err_t cla_matrix_qr_copy(const cla_matrix_qr_ptr_t m_qr_src, cla_matrix_qr_p
  * @param m_qr_a QR decomposition of matrix A.
  * @return esp_err_t ESP_OK on success.
  */
-esp_err_t cla_matrix_qr_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_ptr_t *const m_qr_a);
+esp_err_t cla_matrix_qr_get_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_ptr_t *const m_qr_a);
 
 /**
- * @brief Solves a system of linear equations Ax = b using QR decomposition.
+ * @brief 
  * 
  * @param m_a Matrix A in the equation Ax = b.
  * @param m_b Matrix b in the equation Ax = b.
@@ -496,7 +498,7 @@ esp_err_t cla_matrix_zero_values(cla_matrix_ptr_t *const m);
  * @param m Matrix to delete column from.
  * @return esp_err_t ESP_OK on success.
  */
-esp_err_t cla_matrix_delete_column(const uint8_t col_idx, cla_matrix_ptr_t *const m);
+esp_err_t cla_matrix_delete_column(const uint16_t col_idx, cla_matrix_ptr_t *const m);
 
 /**
  * @brief Swaps two columns from a matrix by column indexes.

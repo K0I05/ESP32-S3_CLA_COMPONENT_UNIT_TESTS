@@ -39,6 +39,7 @@
 #include <cla_matrix_lup_determinant_data.h>
 #include <cla_matrix_lup_inverse_data.h>
 #include <cla_matrix_lup_solve_data.h>
+#include <cla_matrix_qr_decomposition_data.h>
 #include <cla_ellipsoid_fitting_data.h>
 
 
@@ -91,7 +92,7 @@ static inline void cla_ls_solve_fwd_test(void) {
         // create matrix A instances and populate with test data
         const uint16_t a_rows = cla_matrix_ls_solve_fwd_a_rows[k];
         const uint16_t a_cols = cla_matrix_ls_solve_fwd_a_cols[k];
-        const double  *a_mats = cla_matrix_ls_solve_fwd_a_mats[k];
+        const double  *a_mats = (const double *)cla_matrix_ls_solve_fwd_a_mats[k];
         cla_matrix_create(a_rows, a_cols, &a);
         for(uint16_t i = 0; i < a->num_rows; i++) {
             for(uint16_t j = 0; j < a->num_cols; j++) {
@@ -102,7 +103,7 @@ static inline void cla_ls_solve_fwd_test(void) {
         // create matrix B instances and populate with test data
         const uint16_t b_rows = cla_matrix_ls_solve_fwd_b_rows[k];
         const uint16_t b_cols = cla_matrix_ls_solve_fwd_b_cols[k];
-        const double  *b_mats = cla_matrix_ls_solve_fwd_b_mats[k];
+        const double  *b_mats = (const double *)cla_matrix_ls_solve_fwd_b_mats[k];
         cla_matrix_create(b_rows, b_cols, &b);
         for(uint16_t i = 0; i < b->num_rows; i++) {
             for(uint16_t j = 0; j < b->num_cols; j++) {
@@ -113,7 +114,7 @@ static inline void cla_ls_solve_fwd_test(void) {
         // create expected matrix X instances and populate with test data
         const uint16_t x_rows = cla_matrix_ls_solve_fwd_x_rows[k];
         const uint16_t x_cols = cla_matrix_ls_solve_fwd_x_cols[k];
-        const double  *x_mats = cla_matrix_ls_solve_fwd_x_mats[k];
+        const double  *x_mats = (const double *)cla_matrix_ls_solve_fwd_x_mats[k];
         cla_matrix_create(x_rows, x_cols, &x_expected);
         for(uint16_t i = 0; i < x_expected->num_rows; i++) {
             for(uint16_t j = 0; j < x_expected->num_cols; j++) {
@@ -157,7 +158,7 @@ static inline void cla_ls_solve_bck_test(void) {
         // create matrix A instances and populate with test data
         const uint16_t a_rows = cla_matrix_ls_solve_bck_a_rows[k];
         const uint16_t a_cols = cla_matrix_ls_solve_bck_a_cols[k];
-        const double  *a_mats = cla_matrix_ls_solve_bck_a_mats[k];
+        const double  *a_mats = (const double *)cla_matrix_ls_solve_bck_a_mats[k];
         cla_matrix_create(a_rows, a_cols, &a);
         for(uint16_t i = 0; i < a->num_rows; i++) {
             for(uint16_t j = 0; j < a->num_cols; j++) {
@@ -168,7 +169,7 @@ static inline void cla_ls_solve_bck_test(void) {
         // create matrix B instances and populate with test data
         const uint16_t b_rows = cla_matrix_ls_solve_bck_b_rows[k];
         const uint16_t b_cols = cla_matrix_ls_solve_bck_b_cols[k];
-        const double  *b_mats = cla_matrix_ls_solve_bck_b_mats[k];
+        const double  *b_mats = (const double *)cla_matrix_ls_solve_bck_b_mats[k];
         cla_matrix_create(b_rows, b_cols, &b);
         for(uint16_t i = 0; i < b->num_rows; i++) {
             for(uint16_t j = 0; j < b->num_cols; j++) {
@@ -179,7 +180,7 @@ static inline void cla_ls_solve_bck_test(void) {
         // create expected matrix X instances and populate with test data
         const uint16_t x_rows = cla_matrix_ls_solve_bck_x_rows[k];
         const uint16_t x_cols = cla_matrix_ls_solve_bck_x_cols[k];
-        const double  *x_mats = cla_matrix_ls_solve_bck_x_mats[k];
+        const double  *x_mats = (const double *)cla_matrix_ls_solve_bck_x_mats[k];
         cla_matrix_create(x_rows, x_cols, &x_expected);
         for(uint16_t i = 0; i < x_expected->num_rows; i++) {
             for(uint16_t j = 0; j < x_expected->num_cols; j++) {
@@ -224,7 +225,7 @@ static inline void cla_ls_solve_test(void) {
         // create matrix A instances and populate with test data
         const uint16_t a_rows = cla_matrix_ls_solve_a_rows[k];
         const uint16_t a_cols = cla_matrix_ls_solve_a_cols[k];
-        const double  *a_mats = cla_matrix_ls_solve_a_mats[k];
+        const double  *a_mats = (const double *)cla_matrix_ls_solve_a_mats[k];
         cla_matrix_create(a_rows, a_cols, &a);
         for(uint16_t i = 0; i < a->num_rows; i++) {
             for(uint16_t j = 0; j < a->num_cols; j++) {
@@ -238,7 +239,7 @@ static inline void cla_ls_solve_test(void) {
         // create matrix B instances and populate with test data
         const uint16_t b_rows = cla_matrix_ls_solve_b_rows[k];
         const uint16_t b_cols = cla_matrix_ls_solve_b_cols[k];
-        const double  *b_mats = cla_matrix_ls_solve_b_mats[k];
+        const double  *b_mats = (const double *)cla_matrix_ls_solve_b_mats[k];
         cla_matrix_create(b_rows, b_cols, &b);
         for(uint16_t i = 0; i < b->num_rows; i++) {
             for(uint16_t j = 0; j < b->num_cols; j++) {
@@ -249,7 +250,7 @@ static inline void cla_ls_solve_test(void) {
         // create expected matrix X instances and populate with test data
         const uint16_t x_rows = cla_matrix_ls_solve_x_rows[k];
         const uint16_t x_cols = cla_matrix_ls_solve_x_cols[k];
-        const double  *x_mats = cla_matrix_ls_solve_x_mats[k];
+        const double  *x_mats = (const double *)cla_matrix_ls_solve_x_mats[k];
         cla_matrix_create(x_rows, x_cols, &x_expected);
         for(uint16_t i = 0; i < x_expected->num_rows; i++) {
             for(uint16_t j = 0; j < x_expected->num_cols; j++) {
@@ -294,7 +295,7 @@ static inline void cla_matrix_lup_solve_test(void) {
         // create matrix input instances and populate with test data
         const uint16_t rows = cla_matrix_lup_solve_rows[k];
         const uint16_t cols = cla_matrix_lup_solve_cols[k];
-        const double  *mats = cla_matrix_lup_solve_mats[k];
+        const double  *mats = (const double *)cla_matrix_lup_solve_mats[k];
         cla_matrix_create(rows, cols, &input);
         for(uint16_t i = 0; i < input->num_rows; i++) {
             for(uint16_t j = 0; j < input->num_cols; j++) {
@@ -343,7 +344,7 @@ static inline void cla_matrix_lup_inverse_test(void) {
         // create matrix A instances and populate with test data
         const uint16_t a_rows = cla_matrix_lup_inverse_a_rows[k];
         const uint16_t a_cols = cla_matrix_lup_inverse_a_cols[k];
-        const double  *a_mats = cla_matrix_lup_inverse_a_mats[k];
+        const double  *a_mats = (const double *)cla_matrix_lup_inverse_a_mats[k];
         cla_matrix_create(a_rows, a_cols, &a);
         for(uint16_t i = 0; i < a->num_rows; i++) {
             for(uint16_t j = 0; j < a->num_cols; j++) {
@@ -407,7 +408,7 @@ static inline void cla_matrix_lup_determinant_test(void) {
         // create matrix A instances and populate with test data
         const uint16_t rows = cla_matrix_lup_determinant_a_rows[k];
         const uint16_t cols = cla_matrix_lup_determinant_a_cols[k];
-        const double  *mats = cla_matrix_lup_determinant_a_mats[k];
+        const double  *mats = (const double *)cla_matrix_lup_determinant_a_mats[k];
         cla_matrix_create(rows, cols, &a);
         for(uint16_t i = 0; i < a->num_rows; i++) {
             for(uint16_t j = 0; j < a->num_cols; j++) {
@@ -437,6 +438,47 @@ static inline void cla_matrix_lup_determinant_test(void) {
         cla_matrix_lup_delete(a_lup);
     }
     ESP_LOGI(CONFIG_APP_TAG, "Matrix LUP Determinant Test Cases - End");
+}
+
+static inline void cla_matrix_qr_decomposition_test(void) {
+    ESP_LOGI(CONFIG_APP_TAG, "Matrix QR Decomposition Test Cases - Begin");
+    // iterate through all test cases
+    for(uint16_t k = 0; k < cla_matrix_qr_decomposition_cases; k++) {
+        cla_matrix_ptr_t a = NULL;
+        cla_matrix_qr_ptr_t a_qr = NULL;
+        cla_matrix_ptr_t qr_dot = NULL;
+
+        ESP_LOGI(CONFIG_APP_TAG, "Matrix QR Decomposition Test Case: %lu", (uint16_t)k + 1);
+
+        // create matrix A instances and populate with test data
+        const uint16_t rows = cla_matrix_qr_decomposition_a_rows[k];
+        const uint16_t cols = cla_matrix_qr_decomposition_a_cols[k];
+        const double  *mats = (const double *)cla_matrix_qr_decomposition_a_mats[k];
+        cla_matrix_create(rows, cols, &a);
+        for(uint16_t i = 0; i < a->num_rows; i++) {
+            for(uint16_t j = 0; j < a->num_cols; j++) {
+                a->data[i][j] = *((mats + i*a->num_cols) + j);
+            }
+        }
+
+        // perform QR decomposition on matrix A
+        cla_matrix_qr_get_decomposition(a, &a_qr);
+
+        // compute matrix dot product from Q and R matrices
+        cla_matrix_multiply(a_qr->q, a_qr->r, &qr_dot);
+
+        // print matrices
+        ESP_LOGI(CONFIG_APP_TAG, "A Matrix:");
+        cla_matrix_print(a);
+        ESP_LOGI(CONFIG_APP_TAG, "Q*R Matrix:");
+        cla_matrix_print(qr_dot);
+
+        // free matrices
+        cla_matrix_delete(a);
+        cla_matrix_delete(qr_dot);
+        cla_matrix_qr_delete(a_qr);
+    }
+    ESP_LOGI(CONFIG_APP_TAG, "Matrix QR Decomposition Test Cases - End");
 }
 
 static inline void cla_ellipsoid_fitting_test(void) {
@@ -528,17 +570,18 @@ static void i2c_0_task( void *pvParameters ) {
     //
     // task loop entry point
     for ( ;; ) {
-        //ESP_LOGI(CONFIG_APP_TAG, "######################## SHT4X - START #########################");
+        //ESP_LOGI(CONFIG_APP_TAG, "######################## CLA - START #########################");
 
+        cla_matrix_qr_decomposition_test();
         //cla_matrix_lup_determinant_test();
         //cla_matrix_lup_inverse_test();
         //cla_matrix_lup_solve_test();
         //cla_ls_solve_fwd_test();
         //cla_ls_solve_bck_test();
         //cla_ls_solve_test();
-        cla_ellipsoid_fitting_test();
+        //cla_ellipsoid_fitting_test();
         //
-        //ESP_LOGI(CONFIG_APP_TAG, "######################## SHT4X - END ###########################");
+        //ESP_LOGI(CONFIG_APP_TAG, "######################## CLA - END ###########################");
         //
         //
         // pause the task per defined wait period (interval) in seconds

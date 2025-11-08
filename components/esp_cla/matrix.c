@@ -488,12 +488,30 @@ esp_err_t cla_matrix_zero_values(cla_matrix_ptr_t *const m) {
  * 
  */
 
-esp_err_t cla_matrix_get_column(const cla_matrix_ptr_t m, const uint16_t col_idx, cla_matrix_ptr_t *const m_col) {
+esp_err_t cla_matrix_delete_column(const uint16_t col_idx, cla_matrix_ptr_t *const m) {
     ESP_ARG_CHECK(m);
-    ESP_RETURN_ON_FALSE( (col_idx < m->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
-    ESP_RETURN_ON_ERROR( cla_matrix_create(m->num_rows, 1, m_col), TAG, "Unable to create matrix instance, get column from matrix failed" );
-    for(uint16_t i = 0; i < (*m_col)->num_rows; i++) {
-        (*m_col)->data[i][0] = m->data[i][col_idx];
+    ESP_RETURN_ON_FALSE( (col_idx < (*m)->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
+    cla_matrix_ptr_t m_d = NULL;
+    ESP_RETURN_ON_ERROR( cla_matrix_create((*m)->num_rows, (*m)->num_cols - 1, &m_d), TAG, "Unable to create matrix instance, delete column from matrix failed" );
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        for(uint16_t j = 0, k = 0; j < (*m)->num_cols; j++) {
+            if(col_idx != j) {
+                m_d->data[i][k++] = (*m)->data[i][j];
+            }
+        }
+    }
+    cla_matrix_delete(*m);
+    *m = m_d;
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_swap_column(const uint16_t col_idx1, const uint16_t col_idx2, cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE( (col_idx1 < (*m)->num_cols && col_idx2 < (*m)->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        double temp = (*m)->data[i][col_idx1];
+        (*m)->data[i][col_idx1] = (*m)->data[i][col_idx2];
+        (*m)->data[i][col_idx2] = temp;
     }
     return ESP_OK;
 }
@@ -506,6 +524,16 @@ esp_err_t cla_matrix_swap_columns(cla_matrix_ptr_t *const m) {
             cla_matrix_swap_values(*((*m)->data+row)+col_left, *((*m)->data+row)+col_right);
         }
         col_right--;
+    }
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_get_column(const cla_matrix_ptr_t m, const uint16_t col_idx, cla_matrix_ptr_t *const m_col) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE( (col_idx < m->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
+    ESP_RETURN_ON_ERROR( cla_matrix_create(m->num_rows, 1, m_col), TAG, "Unable to create matrix instance, get column from matrix failed" );
+    for(uint16_t i = 0; i < (*m_col)->num_rows; i++) {
+        (*m_col)->data[i][0] = m->data[i][col_idx];
     }
     return ESP_OK;
 }
@@ -526,6 +554,15 @@ esp_err_t cla_matrix_get_columns_l2norm(const cla_matrix_ptr_t m, cla_matrix_ptr
     ESP_RETURN_ON_ERROR( cla_matrix_create(1, m->num_cols, m_norm), TAG, "Unable to create matrix instance, get columns l2norm from matrix failed" );
     for(uint16_t i = 0; i < (*m_norm)->num_cols; i++) {
         cla_matrix_get_column_l2norm(m, i, &((*m_norm)->data[0][i]));
+    }
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_multiply_column(const uint16_t col_idx, const double scalar, cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE( (col_idx < (*m)->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        (*m)->data[i][col_idx] *= scalar;
     }
     return ESP_OK;
 }
@@ -728,9 +765,12 @@ esp_err_t cla_matrix_lup_get_lu(const cla_matrix_lup_ptr_t m_lup, cla_matrix_ptr
  * 
  */
 
-esp_err_t cla_matrix_qr_create(cla_matrix_qr_ptr_t *const m_qr) {
+esp_err_t cla_matrix_qr_create(const cla_matrix_ptr_t m_q, const cla_matrix_ptr_t m_r, cla_matrix_qr_ptr_t *const m_qr) {
+    ESP_ARG_CHECK(m_q && m_r);
     cla_matrix_qr_ptr_t qr = (cla_matrix_qr_ptr_t)calloc(1, sizeof(cla_matrix_qr_t));
     ESP_RETURN_ON_FALSE( (qr != NULL), ESP_ERR_NO_MEM, TAG, "Unable to allocate memory for QR decomposition matrix structure" );
+    qr->q = m_q;
+    qr->r = m_r;
     *m_qr = qr;
     return ESP_OK;
 }
@@ -754,41 +794,39 @@ esp_err_t cla_matrix_qr_print(cla_matrix_qr_ptr_t m_qr) {
 
 esp_err_t cla_matrix_qr_copy(const cla_matrix_qr_ptr_t m_qr_src, cla_matrix_qr_ptr_t *const m_qr_dst) {
     ESP_ARG_CHECK(m_qr_src);
-    ESP_RETURN_ON_ERROR( cla_matrix_qr_create(m_qr_dst), TAG, "Unable to create QR decomposition instance, copy QR decomposition failed" );
     cla_matrix_ptr_t q = NULL;
     cla_matrix_ptr_t r = NULL;
     ESP_RETURN_ON_ERROR( cla_matrix_copy(m_qr_src->q, &q), TAG, "Unable to copy Q matrix in QR decomposition" );
     ESP_RETURN_ON_ERROR( cla_matrix_copy(m_qr_src->r, &r), TAG, "Unable to copy R matrix in QR decomposition" );
-    (*m_qr_dst)->q = q;
-    (*m_qr_dst)->r = r;
+    ESP_RETURN_ON_ERROR( cla_matrix_qr_create(q, r, m_qr_dst), TAG, "Unable to create QR decomposition instance, copy QR decomposition failed" );
     return ESP_OK;
 }
 
-esp_err_t cla_matrix_qr_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_ptr_t *const m_qr_a) {
+esp_err_t cla_matrix_qr_get_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_ptr_t *const m_qr_a) {
     esp_err_t ret = ESP_OK;
 
     ESP_ARG_CHECK(m_a);
 
     cla_matrix_ptr_t q = NULL, r = NULL, u = NULL;
-    ESP_RETURN_ON_ERROR(cla_matrix_create(m_a->num_rows, m_a->num_cols, &q), TAG, "Failed to create Q matrix");
-    ESP_RETURN_ON_ERROR(cla_matrix_create(m_a->num_cols, m_a->num_cols, &r), TAG, "Failed to create R matrix");
-    ESP_RETURN_ON_ERROR(cla_matrix_copy(m_a, &u), TAG, "Failed to copy matrix to U");
+    ESP_RETURN_ON_ERROR( cla_matrix_create(m_a->num_rows, m_a->num_cols, &q), TAG, "Failed to create Q matrix" );
+    ESP_RETURN_ON_ERROR( cla_matrix_create(m_a->num_cols, m_a->num_cols, &r), TAG, "Failed to create R matrix" );
+    ESP_RETURN_ON_ERROR( cla_matrix_copy(m_a, &u), TAG, "Failed to copy matrix to U" );
 
     for (uint16_t j = 0; j < m_a->num_cols; j++) {
         cla_matrix_ptr_t u_j = NULL, q_i = NULL;
-        ESP_GOTO_ON_ERROR(cla_matrix_get_column(u, j, &u_j), cleanup, TAG, "Failed to get column from U");
+        ESP_GOTO_ON_ERROR( cla_matrix_get_column(u, j, &u_j), cleanup, TAG, "Failed to get column from U" );
 
         for (uint16_t i = 0; i < j; i++) {
-            ESP_GOTO_ON_ERROR(cla_matrix_get_column(q, i, &q_i), cleanup, TAG, "Failed to get column from Q");
+            ESP_GOTO_ON_ERROR( cla_matrix_get_column(q, i, &q_i), cleanup, TAG, "Failed to get column from Q" );
             double dot_product;
-            ESP_GOTO_ON_ERROR(cla_matrix_get_vector_dot_product(q_i, 0, u_j, 0, &dot_product), cleanup, TAG, "Failed to compute dot product");
+            ESP_GOTO_ON_ERROR( cla_matrix_get_vector_dot_product(q_i, 0, u_j, 0, &dot_product), cleanup, TAG, "Failed to compute dot product" );
             r->data[i][j] = dot_product;
 
             cla_matrix_ptr_t q_i_scaled = NULL;
-            ESP_GOTO_ON_ERROR(cla_matrix_scale(q_i, dot_product, &q_i_scaled), cleanup, TAG, "Failed to scale Q column");
+            ESP_GOTO_ON_ERROR( cla_matrix_scale(q_i, dot_product, &q_i_scaled), cleanup, TAG, "Failed to scale Q column" );
             
             cla_matrix_ptr_t temp_sub = NULL;
-            ESP_GOTO_ON_ERROR(cla_matrix_subtract(u_j, q_i_scaled, &temp_sub), cleanup, TAG, "Failed to subtract scaled Q column");
+            ESP_GOTO_ON_ERROR( cla_matrix_subtract(u_j, q_i_scaled, &temp_sub), cleanup, TAG, "Failed to subtract scaled Q column" );
             cla_matrix_delete(u_j);
             u_j = temp_sub;
             cla_matrix_delete(q_i_scaled);
@@ -796,7 +834,7 @@ esp_err_t cla_matrix_qr_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_
         }
 
         double norm;
-        ESP_GOTO_ON_ERROR(cla_matrix_get_column_l2norm(u_j, 0, &norm), cleanup, TAG, "Failed to compute L2 norm");
+        ESP_GOTO_ON_ERROR( cla_matrix_get_column_l2norm(u_j, 0, &norm), cleanup, TAG, "Failed to compute L2 norm" );
         r->data[j][j] = norm;
 
         for (uint16_t i = 0; i < m_a->num_rows; i++) {
@@ -805,9 +843,7 @@ esp_err_t cla_matrix_qr_decomposition(const cla_matrix_ptr_t m_a, cla_matrix_qr_
         cla_matrix_delete(u_j);
     }
 
-    ESP_RETURN_ON_ERROR(cla_matrix_qr_create(m_qr_a), TAG, "Failed to create QR struct");
-    (*m_qr_a)->q = q;
-    (*m_qr_a)->r = r;
+    ESP_RETURN_ON_ERROR( cla_matrix_qr_create(q, r, m_qr_a), TAG, "Failed to create QR struct" );
 
 cleanup:
     cla_matrix_delete(u);
@@ -823,10 +859,10 @@ esp_err_t cla_matrix_qr_solve(const cla_matrix_ptr_t m_a, const cla_matrix_ptr_t
     cla_matrix_ptr_t q_transpose = NULL;
     cla_matrix_ptr_t q_transpose_b = NULL;
 
-    ESP_GOTO_ON_ERROR(cla_matrix_qr_decomposition(m_a, &qr), cleanup, TAG, "QR decomposition failed");
-    ESP_GOTO_ON_ERROR(cla_matrix_transpose(qr->q, &q_transpose), cleanup, TAG, "Failed to transpose Q");
-    ESP_GOTO_ON_ERROR(cla_matrix_multiply(q_transpose, m_b, &q_transpose_b), cleanup, TAG, "Failed to compute Q_transpose * b");
-    ESP_GOTO_ON_ERROR(cla_matrix_ls_solve_bck(qr->r, q_transpose_b, m_x), cleanup, TAG, "Failed to solve back substitution");
+    ESP_GOTO_ON_ERROR( cla_matrix_qr_get_decomposition(m_a, &qr), cleanup, TAG, "QR decomposition failed" );
+    ESP_GOTO_ON_ERROR( cla_matrix_transpose(qr->q, &q_transpose), cleanup, TAG, "Failed to transpose Q" );
+    ESP_GOTO_ON_ERROR( cla_matrix_multiply(q_transpose, m_b, &q_transpose_b), cleanup, TAG, "Failed to compute Q_transpose * b" );
+    ESP_GOTO_ON_ERROR( cla_matrix_ls_solve_bck(qr->r, q_transpose_b, m_x), cleanup, TAG, "Failed to solve back substitution" );
 
 cleanup:
     cla_matrix_qr_delete(qr);
@@ -835,6 +871,8 @@ cleanup:
     ret = (*m_x != NULL) ? ESP_OK : ESP_FAIL;
     return ret;
 }
+
+
 
 
 esp_err_t cla_matrix_ls_solve_fwd(const cla_matrix_ptr_t m_l, const cla_matrix_ptr_t m_b, cla_matrix_ptr_t *const m_x) {

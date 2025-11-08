@@ -26,7 +26,7 @@ from sympy import Matrix, pprint, randMatrix, N, eye
 from sympy.printing.str import StrPrinter
 from sympy.abc import x 
 
-filename = "../data/cla_matrix_qr_solve_data.h"
+filename = "../data/cla_matrix_qr_decomposition_data.h"
 
 num_tests = 10
 min_M_cols = 1
@@ -49,8 +49,8 @@ fs.write("\n")
 fs.write("/* Copyright (c) 2025 Eric Gionet (gionet.c.eric@gmail.com) */")
 fs.write("\n")
 fs.write("\n")
-fs.write("#ifndef __CLA_MATRIX_QR_SOLVE_TEST_DATA_H__\n")
-fs.write("#define __CLA_MATRIX_QR_SOLVE_TEST_DATA_H__\n")
+fs.write("#ifndef __CLA_MATRIX_QR_DECOMPOSITION_TEST_DATA_H__\n")
+fs.write("#define __CLA_MATRIX_QR_DECOMPOSITION_TEST_DATA_H__\n")
 fs.write("\n")
 fs.write("#include <stdint.h>\n")
 fs.write("\n")
@@ -58,7 +58,7 @@ fs.write("#ifdef __cplusplus\n")
 fs.write('extern "C" {\n')
 fs.write("#endif\n")
 fs.write("\n")
-fs.write("\nstatic const uint8_t cla_matrix_qr_solve_cases = {};\n".format(num_tests))
+fs.write("\nstatic const uint8_t cla_matrix_qr_decomposition_cases = {};\n".format(num_tests))
 fs.write("\n")
 
 for i in range(num_tests):
@@ -67,20 +67,20 @@ for i in range(num_tests):
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)
     
-    a_rows += " cla_matrix_qr_solve_a_{}_rows,".format(t_case)
-    a_cols += " cla_matrix_qr_solve_a_{}_cols,".format(t_case)
-    a_mats += " &cla_matrix_qr_solve_a_{}_matrix[0][0],".format(t_case)
+    a_rows += " cla_matrix_qr_decomposition_a_{}_rows,".format(t_case)
+    a_cols += " cla_matrix_qr_decomposition_a_{}_cols,".format(t_case)
+    a_mats += " &cla_matrix_qr_decomposition_a_{}_matrix[0][0],".format(t_case)
     
-    fs.write("\nstatic const uint16_t cla_matrix_qr_solve_a_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_qr_solve_a_{}_cols = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const double cla_matrix_qr_solve_a_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
+    fs.write("\nstatic const uint16_t cla_matrix_qr_decomposition_a_{}_rows = {};\n".format(t_case, M_dim))
+    fs.write("\nstatic const uint16_t cla_matrix_qr_decomposition_a_{}_cols = {};\n".format(t_case, M_dim))
+    fs.write("\nstatic const double cla_matrix_qr_decomposition_a_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
     fs.write("{\n")
     fs.write(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     fs.write("};\n")
 
-fs.write("\nstatic const uint16_t cla_matrix_qr_solve_a_rows[{}] = {{{}}};\n".format(num_tests, a_rows))
-fs.write("\nstatic const uint16_t cla_matrix_qr_solve_a_cols[{}] = {{{}}};\n".format(num_tests, a_cols))
-fs.write("\nstatic const double *cla_matrix_qr_solve_a_mats[{}]  = {{{}}};\n".format(num_tests, a_mats))
+fs.write("\nstatic const uint16_t cla_matrix_qr_decomposition_a_rows[{}] = {{{}}};\n".format(num_tests, a_rows))
+fs.write("\nstatic const uint16_t cla_matrix_qr_decomposition_a_cols[{}] = {{{}}};\n".format(num_tests, a_cols))
+fs.write("\nstatic const double *cla_matrix_qr_decomposition_a_mats[{}]  = {{{}}};\n".format(num_tests, a_mats))
 
 
 fs.write("\n")
@@ -88,5 +88,5 @@ fs.write("#ifdef __cplusplus\n")
 fs.write("}\n")
 fs.write("#endif\n")
 fs.write("\n")
-fs.write("#endif  // __CLA_MATRIX_QR_SOLVE_TEST_DATA_H__\n")
+fs.write("#endif  // __CLA_MATRIX_QR_DECOMPOSITION_TEST_DATA_H__\n")
 fs.close() 
