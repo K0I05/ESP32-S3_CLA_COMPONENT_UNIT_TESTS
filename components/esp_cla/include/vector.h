@@ -71,12 +71,50 @@ extern "C" {
 typedef struct cla_vector_s {
     uint16_t num_cmps;   /*!< number of components in the vector */
     double *data;        /*!< 1 dimensional array for vector components */
+    bool is_2d;          /*!< true if vector is 2D, false otherwise */
+    bool is_3d;          /*!< true if vector is 3D, false otherwise */
 } cla_vector_t;
 
 /**
  * @brief Pointer to a vector structure.
  */
 typedef cla_vector_t* cla_vector_ptr_t;
+
+/**
+ * @brief Vector iterator structure definition.
+ */
+typedef struct cla_vector_iterator_s {
+    uint16_t cmp_size;
+    double* data_ptr;
+} cla_vector_iterator_t;
+
+
+/**
+ * public function prototypes
+ */
+
+// iterator example in C: https://github.com/goldsborough/vector
+/*
+cla_vector_iterator_t cla_vector_begin(const cla_vector_ptr_t v);
+cla_vector_iterator_t cla_vector_end(const cla_vector_ptr_t v);
+cla_vector_iterator_t cla_vector_iterator(const cla_vector_ptr_t v, const uint16_t cmp_idx);
+
+double* cla_vector_iterator_get(const cla_vector_iterator_t it);
+
+esp_err_t cla_vector_iterator_delete(cla_vector_ptr_t *const v, cla_vector_iterator_t *const it);
+
+void cla_vector_iterator_increment(cla_vector_iterator_t *const it);
+void cla_vector_iterator_decrement(cla_vector_iterator_t *const it);
+
+double* cla_vector_next(cla_vector_iterator_t *const it);
+double* cla_vector_previous(cla_vector_iterator_t *const it);
+
+bool cla_vector_iterator_equals(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2);
+bool cla_vector_iterator_is_before(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2);
+bool cla_vector_iterator_is_after(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2);
+
+uint16_t cla_vector_iterator_index(const cla_vector_ptr_t v, const cla_vector_iterator_t it);
+*/
 
 
 

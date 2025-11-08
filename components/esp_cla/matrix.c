@@ -151,14 +151,14 @@ static inline esp_err_t cla_matrix_get_max_pivot_idx(const cla_matrix_ptr_t m, c
 
 esp_err_t cla_matrix_create(const uint16_t num_rows, const uint16_t num_cols, cla_matrix_ptr_t *const m) {
     ESP_RETURN_ON_FALSE( (num_rows != 0 || num_cols != 0), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of rows and columns must be greater than 0" );
-    //ESP_RETURN_ON_FALSE( (num_rows < CLA_MATRIX_ROW_SIZE_MAX + 1), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of rows exceeds maximum allowed" );
-    //ESP_RETURN_ON_FALSE( (num_cols < CLA_MATRIX_COL_SIZE_MAX + 1), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of columns exceeds maximum allowed" );
+    ESP_RETURN_ON_FALSE( (num_rows <= CLA_MATRIX_ROW_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of rows exceeds maximum allowed" );
+    ESP_RETURN_ON_FALSE( (num_cols <= CLA_MATRIX_COL_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of columns exceeds maximum allowed" );
     cla_matrix_ptr_t matrix = (cla_matrix_ptr_t)calloc(1, sizeof(cla_matrix_t));
     ESP_RETURN_ON_FALSE( (matrix != NULL) , ESP_ERR_INVALID_ARG, TAG, "Invalid matrix, unable to allocate memory for matrix instance" );
-    matrix->num_rows = num_rows;
-    matrix->num_cols = num_cols;
+    matrix->num_rows  = num_rows;
+    matrix->num_cols  = num_cols;
     matrix->is_square = (matrix->num_rows == matrix->num_cols) ? true : false;
-    matrix->data = (double**)calloc(matrix->num_rows, sizeof(double));
+    matrix->data      = (double**)calloc(matrix->num_rows, sizeof(double));
     ESP_RETURN_ON_FALSE( (matrix->data != NULL) , ESP_ERR_INVALID_ARG, TAG, "Invalid matrix, unable to allocate memory for matrix rows" );
     for(uint8_t i = 0; i < matrix->num_rows; i++) {
         matrix->data[i] = (double*)calloc(matrix->num_cols, sizeof(double));
@@ -476,7 +476,7 @@ esp_err_t cla_matrix_zero_values(cla_matrix_ptr_t *const m) {
     ESP_ARG_CHECK(m);
     for(uint16_t i = 0; i < (*m)->num_rows; i++) {
         for(uint16_t j = 0; j < (*m)->num_cols; j++) {
-            (*m)->data[i][j] = 0.0f;
+            (*m)->data[i][j] = 0.0;
         }
     }
     return ESP_OK;
@@ -973,5 +973,67 @@ esp_err_t cla_matrix_ls_solve(const cla_matrix_lup_ptr_t m_lup_lu, const cla_mat
     ESP_RETURN_ON_ERROR( cla_matrix_ls_solve_bck(m_lup_lu->u, y, m_x), TAG, "Unable to solve back substitution, LUP upper triangular matrix and intermediate y matrix failed" );
     cla_matrix_delete(pb);
     cla_matrix_delete(y);
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_get_row_echelon_form(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_ref) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_ERROR( cla_matrix_copy(m, m_ref), TAG, "Unable to copy matrix instance, copy matrix failed" );
+    uint16_t j = 0;
+    uint16_t i = 0;
+    while(j < (*m_ref)->num_cols && i < (*m_ref)->num_rows) {
+        // Find the pivot - the first non-zero entry in the first column of the matrix
+        int16_t pivot = -1;
+        ESP_RETURN_ON_ERROR( cla_matrix_get_pivot_idx(*m_ref, j, i, &pivot), TAG, "Unable to get pivot index, get pivot index failed" );
+        if(pivot < 0) {
+            j++;
+            continue;
+        }
+        // We interchange rows moving the pivot to the first row that doesn't have already a pivot in place
+        if(pivot != i) {
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(i, pivot, m_ref), TAG, "Unable to swap rows, swap rows failed" );
+        }
+        // Multiply each element in the pivot row by the inverse of the pivot
+        ESP_RETURN_ON_ERROR( cla_matrix_multiply_row(i, 1.0 / (*m_ref)->data[i][j], m_ref), TAG, "Unable to multiply row, multiply row failed" );
+        // We add multiplies of the pivot so every element on the column equals 0
+        for(uint16_t k = i+1; k < (*m_ref)->num_rows; k++) {
+            if(fabs((*m_ref)->data[k][j]) > CLA_MATRIX_MIN_COEF) {
+                ESP_RETURN_ON_ERROR( cla_matrix_add_scaled_row(i, k, -(*m_ref)->data[k][j], m_ref), TAG, "Unable to add scaled row, add scaled row failed" );
+            }
+        }
+        i++;
+        j++;
+    }
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_get_reduced_row_echelon_form(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_rref) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_ERROR( cla_matrix_copy(m, m_rref), TAG, "Unable to copy matrix instance, copy matrix failed" );
+    uint16_t j = 0;
+    uint16_t i = 0;
+    while(j < (*m_rref)->num_cols && i < (*m_rref)->num_rows) {
+        // Find the pivot - the first non-zero entry in the first column of the matrix
+        int16_t pivot = -1;
+        ESP_RETURN_ON_ERROR( cla_matrix_get_max_pivot_idx(*m_rref, j, i, &pivot), TAG, "Unable to get pivot index, get pivot index failed" );
+        if(pivot < 0) {
+            j++;
+            continue;
+        }
+        // We interchange rows moving the pivot to the first row that doesn't have already a pivot in place
+        if(pivot != i) {
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(i, pivot, m_rref), TAG, "Unable to swap rows, swap rows failed" );
+        }
+        // We create 1 in the pivot position
+        ESP_RETURN_ON_ERROR( cla_matrix_multiply_row(i, 1.0 / (*m_rref)->data[i][j], m_rref), TAG, "Unable to multiply row, multiply row failed" );
+        // We put zeros on the column with the pivot
+        for(uint16_t k = i+1; k < (*m_rref)->num_rows; k++) {
+            if (!(k==i)) {
+                ESP_RETURN_ON_ERROR( cla_matrix_add_scaled_row(i, k, -(*m_rref)->data[k][j], m_rref), TAG, "Unable to add scaled row, add scaled row failed" );
+            }
+        }
+        i++;
+        j++;
+    }
     return ESP_OK;
 }

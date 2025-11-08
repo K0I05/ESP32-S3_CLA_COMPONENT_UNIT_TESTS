@@ -417,7 +417,7 @@ static inline void cla_matrix_lup_determinant_test(void) {
         }
 
         // get expected determinant value
-        const float x_expected = cla_matrix_lup_determinant_x_vals[k];
+        const double x_expected = cla_matrix_lup_determinant_x_vals[k];
 
         // perform LUP decomposition on matrix A
         cla_matrix_lup_solve(a, &a_lup);
@@ -521,6 +521,17 @@ static inline void cla_ellipsoid_fitting_test(void) {
                 printf("%.4f ", expected_coeffs->data[i]);
             }
             printf("\n");
+            //
+            //printf("\n");
+            //printf("Expected Coeffs Iterator: ");
+            //cla_vector_iterator_t it = cla_vector_begin(computed_coeffs);
+            //cla_vector_iterator_t last = cla_vector_end(computed_coeffs);
+            //for(; !cla_vector_iterator_equals(it, last); cla_vector_iterator_increment(&it)) {
+            //    double* value = cla_vector_iterator_get(it);
+            //    printf("%.4lf ", *value);
+            //}
+            //printf("\n");
+            //
         } else {
             ESP_LOGE(CONFIG_APP_TAG, "Ellipsoid fitting failed with error: %s", esp_err_to_name(err));
         }
@@ -572,14 +583,14 @@ static void i2c_0_task( void *pvParameters ) {
     for ( ;; ) {
         //ESP_LOGI(CONFIG_APP_TAG, "######################## CLA - START #########################");
 
-        cla_matrix_qr_decomposition_test();
+        //cla_matrix_qr_decomposition_test();
         //cla_matrix_lup_determinant_test();
         //cla_matrix_lup_inverse_test();
         //cla_matrix_lup_solve_test();
         //cla_ls_solve_fwd_test();
         //cla_ls_solve_bck_test();
         //cla_ls_solve_test();
-        //cla_ellipsoid_fitting_test();
+        cla_ellipsoid_fitting_test();
         //
         //ESP_LOGI(CONFIG_APP_TAG, "######################## CLA - END ###########################");
         //

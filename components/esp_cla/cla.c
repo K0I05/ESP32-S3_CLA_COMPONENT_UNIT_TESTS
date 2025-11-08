@@ -221,7 +221,7 @@ esp_err_t cla_get_calibration_parameters(const cla_vector_ptr_t v_ellip_coeffs, 
     ESP_GOTO_ON_ERROR(cla_matrix_lup_solve(M, &M_lup), cleanup, TAG, "LUP decomp failed");
     ESP_GOTO_ON_ERROR(cla_matrix_lup_get_inverse(M_lup, &M_inv), cleanup, TAG, "Matrix inverse failed");
     ESP_GOTO_ON_ERROR(cla_matrix_multiply_vector(M_inv, b, &M_inv_b), cleanup, TAG, "Matrix-vector multiply failed");
-    ESP_GOTO_ON_ERROR(cla_vector_scale(M_inv_b, -0.5f, v_offset), cleanup, TAG, "Vector scaling failed");
+    ESP_GOTO_ON_ERROR(cla_vector_scale(M_inv_b, -0.5, v_offset), cleanup, TAG, "Vector scaling failed");
 
     // 3. Calculate Soft-Iron correction matrix W
     // This step requires a matrix decomposition like Cholesky or Eigenvalue decomposition.

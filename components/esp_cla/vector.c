@@ -49,13 +49,26 @@
 */
 static const char *TAG = "cla_vector";
 
+/**
+ * @brief
+ * 
+ * @param v 
+ * @param cmp_idx 
+ * @return double* 
+ */
+static inline double* cla_vector_get_offset(const cla_vector_ptr_t v, const uint16_t cmp_idx) {
+	return v->data + (cmp_idx * v->num_cmps);
+}
+
 esp_err_t cla_vector_create(const uint16_t num_cmps, cla_vector_ptr_t *const v) {
     ESP_RETURN_ON_FALSE( (num_cmps > 0), ESP_ERR_INVALID_ARG, TAG, "Invalid vector dimensions, number of components must be greater than 0" );
-    //ESP_RETURN_ON_FALSE( (num_cmps <= CLA_VECTOR_CMPS_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid vector dimensions, number of components exceeds maximum allowed" );
+    ESP_RETURN_ON_FALSE( (num_cmps <= CLA_VECTOR_CMPS_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid vector dimensions, number of components exceeds maximum allowed" );
     cla_vector_ptr_t vector = (cla_vector_ptr_t)calloc(1, sizeof(cla_vector_t));
     ESP_RETURN_ON_FALSE( (vector != NULL), ESP_ERR_NO_MEM, TAG, "Unable to allocate memory for vector structure" );
     vector->num_cmps = num_cmps;
-    vector->data = (double*)calloc(num_cmps, sizeof(double));
+    vector->is_2d    = (num_cmps == 2) ? true : false;
+    vector->is_3d    = (num_cmps == 3) ? true : false;
+    vector->data     = (double*)calloc(num_cmps, sizeof(double));
     ESP_RETURN_ON_FALSE( (vector->data != NULL), ESP_ERR_NO_MEM, TAG, "Unable to allocate memory for vector data array" );
     *v = vector;
     return ESP_OK;
@@ -231,3 +244,78 @@ esp_err_t cla_vector_delete_component(const uint16_t cmp_idx, cla_vector_ptr_t *
     *v = v_d;
     return ESP_OK;
 }
+
+
+
+
+
+
+/*
+
+cla_vector_iterator_t cla_vector_begin(const cla_vector_ptr_t v) {
+    return cla_vector_iterator(v, 0);
+}
+
+cla_vector_iterator_t cla_vector_end(const cla_vector_ptr_t v) {
+    return cla_vector_iterator(v, v->num_cmps);
+}
+
+cla_vector_iterator_t cla_vector_iterator(const cla_vector_ptr_t v, const uint16_t cmp_idx) {
+    cla_vector_iterator_t it = { .data_ptr = NULL, .cmp_size = 0 };
+    if(v == NULL) return it;
+    if(cmp_idx >= v->num_cmps) return it;
+    if(v->num_cmps == 0) return it;
+    it.data_ptr = cla_vector_get_offset(v, cmp_idx);
+    it.cmp_size = v->num_cmps;
+    return it;
+}
+
+double* cla_vector_iterator_get(const cla_vector_iterator_t it) {
+    return it.data_ptr;
+}
+
+esp_err_t cla_vector_iterator_delete(cla_vector_ptr_t *const v, cla_vector_iterator_t *const it) {
+    ESP_ARG_CHECK(v && it);
+    uint16_t cmp_idx = cla_vector_iterator_index(*v, *it);
+    ESP_RETURN_ON_ERROR( cla_vector_delete_component(cmp_idx, v), TAG, "Unable to delete component from vector" );
+    *it = cla_vector_iterator(*v, cmp_idx);
+    return ESP_OK;
+}
+
+void cla_vector_iterator_increment(cla_vector_iterator_t *const it) {
+    *it->data_ptr += it->cmp_size;
+}
+
+void cla_vector_iterator_decrement(cla_vector_iterator_t *const it) {
+    *it->data_ptr -= it->cmp_size;
+}
+
+double* cla_vector_next(cla_vector_iterator_t *const it) {
+    double* current = it->data_ptr;
+    cla_vector_iterator_increment(it);
+    return current;
+}
+
+double* cla_vector_previous(cla_vector_iterator_t *const it) {
+    double* current = it->data_ptr;
+    cla_vector_iterator_decrement(it);
+    return current;
+}
+
+bool cla_vector_iterator_equals(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2) {
+    return (it1.cmp_size == it2.cmp_size) ? true : false;
+}
+
+bool cla_vector_iterator_is_before(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2) {
+    return (it1.data_ptr < it2.data_ptr) ? true : false;
+}
+
+bool cla_vector_iterator_is_after(const cla_vector_iterator_t it1, const cla_vector_iterator_t it2) {
+    return (it1.data_ptr > it2.data_ptr) ? true : false;
+}
+
+uint16_t cla_vector_iterator_index(const cla_vector_ptr_t v, const cla_vector_iterator_t it) {
+    return (it.data_ptr - v->data) / v->num_cmps;
+}
+
+*/
