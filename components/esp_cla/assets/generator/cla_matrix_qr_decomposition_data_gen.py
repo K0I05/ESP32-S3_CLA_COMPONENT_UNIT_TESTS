@@ -22,9 +22,8 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import Matrix, pprint, randMatrix, N, eye
+from sympy import randMatrix
 from sympy.printing.str import StrPrinter
-from sympy.abc import x 
 
 filename = "../data/cla_matrix_qr_decomposition_data.h"
 

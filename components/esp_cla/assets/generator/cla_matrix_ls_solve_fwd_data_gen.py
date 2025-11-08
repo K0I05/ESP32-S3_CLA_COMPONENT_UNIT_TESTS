@@ -22,7 +22,7 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import Matrix, pprint, randMatrix, N, eye
+from sympy import randMatrix, N
 from sympy.matrices.dense import zeros
 from sympy.printing.str import StrPrinter
 from sympy.abc import x 

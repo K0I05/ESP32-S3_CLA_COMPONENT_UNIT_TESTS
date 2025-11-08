@@ -22,9 +22,8 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import Matrix, pprint, randMatrix, N, eye
+from sympy import randMatrix
 from sympy.printing.str import StrPrinter
-from sympy.abc import x 
 
 filename = "../data/cla_matrix_lup_solve_data.h"
 
@@ -63,7 +62,6 @@ fs.write("\n")
 
 for i in range(num_tests):
     print("Creating test case: ", i + 1)
-    t_case = i
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)
     

@@ -22,10 +22,8 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import Matrix, pprint, randMatrix, N, eye
-from sympy.matrices.dense import zeros
+from sympy import randMatrix, N
 from sympy.printing.str import StrPrinter
-from sympy.abc import x 
 
 filename = "../data/cla_matrix_lup_inverse_data.h"
 
