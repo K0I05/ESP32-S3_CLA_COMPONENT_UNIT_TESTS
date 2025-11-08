@@ -262,6 +262,23 @@ esp_err_t cla_vector_set_values(const double cmp_value, cla_vector_ptr_t *const 
 esp_err_t cla_vector_zero_values(cla_vector_ptr_t *const v);
 
 /**
+ * @brief
+ * 
+ * @param v 
+ * @return esp_err_t 
+ */
+esp_err_t cla_vector_add_component(cla_vector_ptr_t *const v);
+
+/**
+ * @brief 
+ * 
+ * @param cmp_idx 
+ * @param v 
+ * @return esp_err_t 
+ */
+esp_err_t cla_vector_delete_component(const uint16_t cmp_idx, cla_vector_ptr_t *const v);
+
+/**
  * @brief 
  * 
  * @param v 

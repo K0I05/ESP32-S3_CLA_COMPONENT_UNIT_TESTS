@@ -204,3 +204,30 @@ esp_err_t cla_vector_zero_values(cla_vector_ptr_t *const v) {
     }
     return ESP_OK;
 }
+
+esp_err_t cla_vector_add_component(cla_vector_ptr_t *const v) {
+    ESP_ARG_CHECK(v);
+    cla_vector_ptr_t v_a = NULL;
+    ESP_RETURN_ON_ERROR( cla_vector_create((*v)->num_cmps + 1, &v_a), TAG, "Unable to create vector instance, add component failed" );
+    for(uint16_t i = 0; i < (*v)->num_cmps; i++) {
+        v_a->data[i] = (*v)->data[i];
+    }
+    cla_vector_delete(*v);
+    *v = v_a;
+    return ESP_OK;
+}
+
+esp_err_t cla_vector_delete_component(const uint16_t cmp_idx, cla_vector_ptr_t *const v) {
+    ESP_ARG_CHECK(v);
+    ESP_RETURN_ON_FALSE( (cmp_idx < (*v)->num_cmps), ESP_ERR_INVALID_ARG, TAG, "Component index out of bounds" );
+    cla_vector_ptr_t v_d = NULL;
+    ESP_RETURN_ON_ERROR( cla_vector_create((*v)->num_cmps - 1, &v_d), TAG, "Unable to create vector instance, delete component failed" );
+    for(uint16_t i = 0, j = 0; i < (*v)->num_cmps; i++) {
+        if (i != cmp_idx) {
+            v_d->data[j++] = (*v)->data[i];
+        }
+    }
+    cla_vector_delete(*v);
+    *v = v_d;
+    return ESP_OK;
+}
