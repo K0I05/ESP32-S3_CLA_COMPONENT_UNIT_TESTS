@@ -1,0 +1,36 @@
+{
+  "idf.portWin": "COM3",
+  "idf.openOcdConfigs": [
+    "board/esp32s3-builtin.cfg"
+  ],
+  "idf.customExtraVars": {
+    "OPENOCD_SCRIPTS": "C:\\Espressif\\tools\\openocd-esp32\\v0.12.0-esp32-20240318/openocd-esp32/share/openocd/scripts",
+    "IDF_CCACHE_ENABLE": "1",
+    "ESP_ROM_ELF_DIR": "C:\\Espressif\\tools\\esp-rom-elfs\\20240305/",
+    "IDF_TARGET": "esp32s3"
+  },
+  "clangd.path": "C:\\Espressif\\tools\\esp-clang\\esp-19.1.2_20250312\\esp-clang\\bin\\clangd.exe",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=C:\\Espressif\\tools\\xtensa-esp-elf\\esp-14.2.0_20241119\\xtensa-esp-elf\\bin\\xtensa-esp32s3-elf-gcc.exe",
+    "--compile-commands-dir=c:\\Users\\lavco\\OneDrive\\Documents\\PlatformIO\\Projects\\ESP32-S3_I2C-SHT4X_20240521\\build"
+  ],
+  "cSpell.words": [
+    "invx",
+    "micol"
+  ],
+  "files.associations": {
+    "random": "c",
+    "matrix.h": "c",
+    "float.h": "c",
+    "cla_ls_solve_data.h": "c",
+    "cla_matrix_lup_solve_data.h": "c",
+    "cla_matrix_lup_determinant_data.h": "c",
+    "cla_matrix_lup_inverse_data.h": "c",
+    "cla_matrix_ls_solve_fwd_data.h": "c",
+    "array": "c",
+    "string": "c",
+    "string_view": "c",
+    "span": "c"
+  }
+}

@@ -1,0 +1,17 @@
+dependencies:
+  idf:
+    source:
+      type: idf
+    version: 5.5.0
+  k0i05/esp_type_utils:
+    dependencies: []
+    source:
+      path: C:\Users\lavco\OneDrive\Documents\PlatformIO\Projects\ESP32-S3_I2C-SHT4X_20240521
+      type: local
+    version: '*'
+direct_dependencies:
+- idf
+- k0i05/esp_type_utils
+manifest_hash: c492293ecc44e090fb11b8ce5fdaa931494f27344e3d2aa4a6488ed11dae8fc4
+target: esp32s3
+version: 2.0.0
