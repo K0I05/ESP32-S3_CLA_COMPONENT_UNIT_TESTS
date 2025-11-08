@@ -45,7 +45,7 @@ x_rows = ""
 x_cols = ""
 x_mats = ""
 
-fs = open(filename, "w")
+fs = open(filename, "w", encoding="utf-8")
 
 fs.write("/*                  MIT License (MIT)                       */")
 fs.write("\n")
@@ -65,42 +65,36 @@ fs.write("#endif\n")
 fs.write("\n")
 fs.write("\nstatic const uint8_t cla_matrix_lup_inverse_cases = {};\n".format(num_tests))
 fs.write("\n")
+
 for i in range(num_tests):
-    print("Creating test case: ", i)
-    t_case = i
+    print("Creating test case: ", i + 1)
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)
     M_inv = M.inv().applyfunc(N)
     
-    a_rows += " cla_matrix_lup_inverse_a_{}_rows,".format(t_case)
-    a_cols += " cla_matrix_lup_inverse_a_{}_cols,".format(t_case)
-    a_mats += " &cla_matrix_lup_inverse_a_{}_matrix[0][0],".format(t_case)
+    a_rows += "{}, ".format(M_dim)
+    a_cols += "{}, ".format(M_dim)
+    a_mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
-    fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_{}_cols = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const double cla_matrix_lup_inverse_a_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
-    fs.write("{\n")
-    fs.write(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
-    fs.write("};\n")
-    
-    x_rows += " cla_matrix_lup_inverse_x_{}_rows,".format(t_case)
-    x_cols += " cla_matrix_lup_inverse_x_{}_cols,".format(t_case)
-    x_mats += " &cla_matrix_lup_inverse_x_{}_matrix[0][0],".format(t_case)
-    
-    fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_{}_cols = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const double cla_matrix_lup_inverse_x_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
-    fs.write("{\n")
-    fs.write(M_inv.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
-    fs.write("};\n")
+    x_rows += "{}, ".format(M_dim)
+    x_cols += "{}, ".format(M_dim)
+    x_mats += "\n{{{}}}, ".format(M_inv.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
 
-fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_rows[{}] = {{{}}};\n".format(num_tests, a_rows))
-fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_cols[{}] = {{{}}};\n".format(num_tests, a_cols))
-fs.write("\nstatic const double *cla_matrix_lup_inverse_a_mats[{}] = {{{}}};\n".format(num_tests, a_mats))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_rows))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_cols))
+fs.write("\nstatic const double cla_matrix_lup_inverse_a_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(a_mats))
 
-fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_rows[{}] = {{{}}};\n".format(num_tests, x_rows))
-fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_cols[{}] = {{{}}};\n".format(num_tests, x_cols))
-fs.write("\nstatic const double *cla_matrix_lup_inverse_x_mats[{}] = {{{}}};\n".format(num_tests, x_mats))
+fs.write("\n")
+
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_rows))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_cols))
+fs.write("\nstatic const double cla_matrix_lup_inverse_x_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(x_mats))
 
 fs.write("\n")
 fs.write("#ifdef __cplusplus\n")

@@ -22,9 +22,8 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import Matrix, pprint, randMatrix, N, eye
+from sympy import randMatrix
 from sympy.printing.str import StrPrinter
-from sympy.abc import x 
 
 filename = "../data/cla_matrix_lup_determinant_data.h"
 
@@ -36,13 +35,13 @@ max_M_rows = 15
 min_val = 0
 max_val = 100
 
-a_rows = ""
-a_cols = ""
-a_mats = ""
+rows = ""
+cols = ""
+mats = ""
 
-x_vals = ""
+vals = ""
 
-fs = open(filename, "w")
+fs = open(filename, "w", encoding="utf-8")
 
 fs.write("/*                  MIT License (MIT)                       */")
 fs.write("\n")
@@ -62,34 +61,29 @@ fs.write("#endif\n")
 fs.write("\n")
 fs.write("\nstatic const uint8_t cla_matrix_lup_determinant_cases = {};\n".format(num_tests))
 fs.write("\n")
+
 for i in range(num_tests):
-    print("Creating test case: ", i)
-    t_case = i
+    print("Creating test case: ", i + 1)
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)
-    M_inv = M.inv().applyfunc(N)
     
-    a_rows += " cla_matrix_lup_determinant_a_{}_rows,".format(t_case)
-    a_cols += " cla_matrix_lup_determinant_a_{}_cols,".format(t_case)
-    a_mats += " &cla_matrix_lup_determinant_a_{}_matrix[0][0],".format(t_case)
+    rows += "{}, ".format(M_dim)
+    cols += "{}, ".format(M_dim)
+    mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
-    fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_a_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_a_{}_cols = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const double cla_matrix_lup_determinant_a_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
-    fs.write("{\n")
-    fs.write(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
-    fs.write("};\n")
+    vals += "{},".format(float(M.det()))
     
-    x_vals += " cla_matrix_lup_determinant_x_{}_val,".format(t_case)
-    
-    fs.write("\nstatic const double cla_matrix_lup_determinant_x_{}_val = {};\n".format(t_case, float(M.det())))
-    
-    
-fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_a_rows[{}] = {{{}}};\n".format(num_tests, a_rows))
-fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_a_cols[{}] = {{{}}};\n".format(num_tests, a_cols))
-fs.write("\nstatic const double *cla_matrix_lup_determinant_a_mats[{}]  = {{{}}};\n".format(num_tests, a_mats))
+fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(rows))
+fs.write("\nstatic const uint16_t cla_matrix_lup_determinant_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(cols))
+fs.write("\nstatic const double cla_matrix_lup_determinant_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(mats))
 
-fs.write("\nstatic const double cla_matrix_lup_determinant_x_vals[{}]  = {{{}}};\n".format(num_tests, x_vals))
+fs.write("\n")
+
+fs.write("\nstatic const double cla_matrix_lup_determinant_vals[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(vals))
 
 fs.write("\n")
 fs.write("#ifdef __cplusplus\n")

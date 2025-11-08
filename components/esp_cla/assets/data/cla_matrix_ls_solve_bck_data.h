@@ -15,431 +15,214 @@ extern "C" {
 static const uint8_t cla_matrix_ls_solve_bck_cases = 10;
 
 
-static const uint16_t cla_matrix_ls_solve_bck_a_0_rows = 8;
+static const uint16_t cla_matrix_ls_solve_bck_a_rows[10] = {2, 3, 13, 7, 9, 12, 2, 9, 1, 5, };
 
-static const uint16_t cla_matrix_ls_solve_bck_a_0_cols = 8;
+static const uint16_t cla_matrix_ls_solve_bck_a_cols[10] = {2, 3, 13, 7, 9, 12, 2, 9, 1, 5, };
 
-static const double cla_matrix_ls_solve_bck_a_0_matrix[8][8] = {
-	{51,58,71, 9,35,40,83,67},
-	{ 0,94,10,80,45,24,22,14},
-	{ 0, 0, 7,22,37,61,28,11},
-	{ 0, 0, 0,79,20,65,41,36},
-	{ 0, 0, 0, 0,80,21,76,74},
-	{ 0, 0, 0, 0, 0,76,27,58},
-	{ 0, 0, 0, 0, 0, 0,75,59},
-	{ 0, 0, 0, 0, 0, 0, 0,92},};
+static const double cla_matrix_ls_solve_bck_a_mats[10][15][15] = {
+{	{17,89},
+	{ 0,62},}, 
+{	{41,97,47},
+	{ 0,65, 2},
+	{ 0, 0,18},}, 
+{	{88,41,86,28, 9,37,33,27,56,70,13,28,63},
+	{ 0,96,26,76,51,74,55,11,98,59,49,90,61},
+	{ 0, 0,35,23,45,59,56,75,37,28,61,77,13},
+	{ 0, 0, 0,49,97, 7,51,52,87,43,53,68,73},
+	{ 0, 0, 0, 0,13, 1,83,82,58,82,65, 3,80},
+	{ 0, 0, 0, 0, 0,51,37,52,87,36,15, 5,12},
+	{ 0, 0, 0, 0, 0, 0,18, 2,71,18,57,63,59},
+	{ 0, 0, 0, 0, 0, 0, 0,82,92,93,45,24,92},
+	{ 0, 0, 0, 0, 0, 0, 0, 0,70,25, 6,78,53},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,17,17,57,38},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,32,51,43},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,67,23},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,73},}, 
+{	{68,2,55,60,87,60,83},
+	{ 0,9,15,91,53,25, 3},
+	{ 0,0,63,77,46,47,17},
+	{ 0,0, 0,13,56,11,62},
+	{ 0,0, 0, 0,79,24, 2},
+	{ 0,0, 0, 0, 0,45,34},
+	{ 0,0, 0, 0, 0, 0,76},}, 
+{	{98,70,36,83,16,31,95,82,60},
+	{ 0,81,29,39,59, 1,76,53,26},
+	{ 0, 0, 6,13,80,54,36,17,55},
+	{ 0, 0, 0,71,90,11,65,19, 1},
+	{ 0, 0, 0, 0,32,57,60,63,73},
+	{ 0, 0, 0, 0, 0,52,27,85,53},
+	{ 0, 0, 0, 0, 0, 0,23,40,80},
+	{ 0, 0, 0, 0, 0, 0, 0,76,59},
+	{ 0, 0, 0, 0, 0, 0, 0, 0,44},}, 
+{	{24,88,44,27,85,43,89,44,86,70,85,42},
+	{ 0,44,86,16,69,62,24,67,88,13, 7,12},
+	{ 0, 0,60,79,20,96,81, 2,82,77,15,58},
+	{ 0, 0, 0, 5, 3,67,26,77,54,77,91,27},
+	{ 0, 0, 0, 0,34,50, 4,55,64,41,82,48},
+	{ 0, 0, 0, 0, 0,42,22,99,11,59, 7,27},
+	{ 0, 0, 0, 0, 0, 0, 9,40,90,90,71,34},
+	{ 0, 0, 0, 0, 0, 0, 0, 8,16,61,65,23},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 5,31,85,61},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,55, 7,56},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,30,93},
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12},}, 
+{	{54,26},
+	{ 0,54},}, 
+{	{22,13,34,53,90,66,35,49,86},
+	{ 0,70,88,41,40,46,22, 5,43},
+	{ 0, 0,10,18,43,62,18,80,61},
+	{ 0, 0, 0,88,64,19,67,67, 8},
+	{ 0, 0, 0, 0,94,75,72,12,44},
+	{ 0, 0, 0, 0, 0,16,23,29,31},
+	{ 0, 0, 0, 0, 0, 0,10,46,92},
+	{ 0, 0, 0, 0, 0, 0, 0,64,44},
+	{ 0, 0, 0, 0, 0, 0, 0, 0,60},}, 
+{	{39},}, 
+{	{76,91,56,41,18},
+	{ 0,31,76,33,98},
+	{ 0, 0,48,22,62},
+	{ 0, 0, 0,26,17},
+	{ 0, 0, 0, 0,82},}, };
 
-static const uint16_t cla_matrix_ls_solve_bck_b_0_rows = 8;
 
-static const uint16_t cla_matrix_ls_solve_bck_b_0_cols = 1;
+static const uint16_t cla_matrix_ls_solve_bck_b_rows[10] = {2, 3, 13, 7, 9, 12, 2, 9, 1, 5, };
 
-static const double cla_matrix_ls_solve_bck_b_0_matrix[8][1] = {
-	{39},
-	{34},
-	{83},
-	{62},
-	{82},
-	{34},
-	{25},
-	{99},};
+static const uint16_t cla_matrix_ls_solve_bck_b_cols[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
-static const uint16_t cla_matrix_ls_solve_bck_x_0_rows = 8;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_0_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_0_matrix[8][1] = {
-	{ -11.2559184355594},
-	{ -1.35654408163204},
-	{  9.08249717937352},
-	{ 0.574722437457154},
-	{ 0.567427512395118},
-	{-0.191538901601831},
-	{-0.513188405797101},
-	{  1.07608695652174},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_1_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_1_cols = 5;
-
-static const double cla_matrix_ls_solve_bck_a_1_matrix[5][5] = {
-	{76,92,25,20,69},
-	{ 0,50,78,20,31},
-	{ 0, 0, 1,14,89},
-	{ 0, 0, 0,62,63},
-	{ 0, 0, 0, 0,68},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_1_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_1_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_1_matrix[5][1] = {
-	{68},
-	{45},
-	{10},
-	{62},
-	{27},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_1_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_1_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_1_matrix[5][1] = {
-	{-52.6636390192749},
-	{ 52.9712239089184},
-	{-33.6897533206831},
-	{0.596537001897533},
-	{0.397058823529412},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_2_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_2_cols = 14;
-
-static const double cla_matrix_ls_solve_bck_a_2_matrix[14][14] = {
-	{13,67,40,23,57,65,78,99,71,30,73,61,17,88},
-	{ 0,44,62,99,31, 3, 2, 3,91,33,11,12,51,23},
-	{ 0, 0,78,19,68,43,11, 2, 8,81,25,68, 4,73},
-	{ 0, 0, 0,78,99,40,22,94,17,95,20,48,61, 3},
-	{ 0, 0, 0, 0,15,60,78,31,92,65,50,47,84, 2},
-	{ 0, 0, 0, 0, 0,66,15,84,60,60,22,27, 4,38},
-	{ 0, 0, 0, 0, 0, 0,31,66,44,38, 7,98,52,24},
-	{ 0, 0, 0, 0, 0, 0, 0, 5,68,15,47,20,24,53},
-	{ 0, 0, 0, 0, 0, 0, 0, 0,79,47, 2, 2,58,54},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,41,55,65,60,17},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,33,62,30, 5},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,86,98,32},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,37,26},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,27},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_2_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_2_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_2_matrix[14][1] = {
-	{100},
-	{ 75},
-	{ 99},
-	{ 36},
-	{ 59},
-	{ 56},
-	{ 93},
-	{  5},
-	{  6},
-	{ 55},
-	{ 25},
-	{ 23},
-	{ 47},
-	{ 90},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_2_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_2_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_2_matrix[14][1] = {
-	{ 3006.73909591666},
-	{-594.584348827328},
-	{ 101.191506769498},
-	{ 266.848089648337},
-	{-207.130928377031},
-	{ 12.6889125576623},
-	{ 39.7583595265463},
-	{-17.1426429699834},
-	{-1.50920605641414},
-	{0.114690697504084},
-	{0.759702620167736},
-	{0.248795306934842},
-	{-1.07207207207207},
-	{ 3.33333333333333},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_3_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_3_cols = 5;
-
-static const double cla_matrix_ls_solve_bck_a_3_matrix[5][5] = {
-	{23,47,73,97,66},
-	{ 0,49,95, 8,48},
-	{ 0, 0,93,82,38},
-	{ 0, 0, 0,90,41},
-	{ 0, 0, 0, 0,54},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_3_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_3_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_3_matrix[5][1] = {
-	{ 5},
-	{79},
-	{32},
-	{18},
-	{46},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_3_rows = 5;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_3_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_3_matrix[5][1] = {
-	{ -2.95850387252021},
-	{ 0.494712877849932},
-	{ 0.161839019425638},
-	{-0.188065843621399},
-	{ 0.851851851851852},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_4_rows = 6;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_4_cols = 6;
-
-static const double cla_matrix_ls_solve_bck_a_4_matrix[6][6] = {
-	{16,47,27,98,25,47},
-	{ 0,38,12, 1,62, 6},
-	{ 0, 0,50,85,35,10},
-	{ 0, 0, 0,14, 8,31},
-	{ 0, 0, 0, 0,86,89},
-	{ 0, 0, 0, 0, 0,48},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_4_rows = 6;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_4_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_4_matrix[6][1] = {
-	{17},
-	{80},
-	{ 4},
-	{57},
+static const double cla_matrix_ls_solve_bck_b_mats[10][15][15] = {
+{	{87},
+	{20},}, 
+{	{100},
+	{ 58},
+	{100},}, 
+{	{77},
+	{43},
+	{94},
 	{20},
-	{58},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_4_rows = 6;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_4_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_4_matrix[6][1] = {
-	{-21.2223735073512},
-	{ 4.41090684560238},
-	{-2.81087763012182},
-	{ 1.97750553709856},
-	{-1.01792635658915},
-	{ 1.20833333333333},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_5_rows = 9;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_5_cols = 9;
-
-static const double cla_matrix_ls_solve_bck_a_5_matrix[9][9] = {
-	{62,85,68,26,83,51, 9,32,51},
-	{ 0,27,97,58, 8,41,13,65,16},
-	{ 0, 0,42,85,44,50,22,37,27},
-	{ 0, 0, 0, 4,77,43,22,76, 9},
-	{ 0, 0, 0, 0,15,19,90,54,27},
-	{ 0, 0, 0, 0, 0,65,33,20,75},
-	{ 0, 0, 0, 0, 0, 0,75,57,24},
-	{ 0, 0, 0, 0, 0, 0, 0, 8,96},
-	{ 0, 0, 0, 0, 0, 0, 0, 0,18},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_5_rows = 9;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_5_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_5_matrix[9][1] = {
-	{ 5},
-	{47},
-	{61},
-	{14},
-	{22},
-	{89},
-	{53},
-	{32},
-	{98},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_5_rows = 9;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_5_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_5_matrix[9][1] = {
-	{-9977.81247341150},
-	{ 9841.32992945326},
-	{-3865.77501587302},
-	{ 1954.99456410256},
-	{-49.3713504273504},
-	{-9.18051282051282},
-	{ 45.5777777777778},
-	{-61.3333333333333},
-	{ 5.44444444444444},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_6_rows = 1;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_6_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_a_6_matrix[1][1] = {
-	{58},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_6_rows = 1;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_6_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_6_matrix[1][1] = {
-	{9},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_6_rows = 1;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_6_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_6_matrix[1][1] = {
-	{0.155172413793103},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_7_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_7_cols = 14;
-
-static const double cla_matrix_ls_solve_bck_a_7_matrix[14][14] = {
-	{51,96,71,81, 7,48,92,38,47,46,58,75,78,73},
-	{ 0,31,27, 9,10,45,54,42,29,27,10,89,38,89},
-	{ 0, 0,26,58,44,24,10,11,93,66,25,16,45, 2},
-	{ 0, 0, 0,87,94, 6,74,20,48,58,22,52,45,38},
-	{ 0, 0, 0, 0,72,43,15,66, 5, 7,38,87,44,43},
-	{ 0, 0, 0, 0, 0,80,98,42,73,75,79,25, 1, 5},
-	{ 0, 0, 0, 0, 0, 0,82,85,26, 4,23,32,91, 2},
-	{ 0, 0, 0, 0, 0, 0, 0,11,56,83,27,34,85,10},
-	{ 0, 0, 0, 0, 0, 0, 0, 0,36,28,94,76,62,39},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,94,18,64,96,76},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8,65,54,78},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,83,35,29},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,34,37},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,58},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_7_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_7_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_7_matrix[14][1] = {
+	{37},
 	{65},
-	{93},
-	{28},
-	{26},
-	{51},
-	{62},
-	{44},
-	{42},
-	{48},
-	{28},
-	{67},
-	{11},
-	{25},
-	{85},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_7_rows = 14;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_7_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_7_matrix[14][1] = {
-	{  -0.639447361799551},
-	{    2.27527387146971},
-	{   -5.63667594861633},
-	{    3.08923710500580},
-	{   -2.40700980437471},
-	{   0.543713370461573},
-	{   -2.09117218509217},
-	{    3.05472056178911},
-	{    1.19438410912795},
-	{-0.00268796150464358},
-	{  0.0267044343703414},
-	{ -0.0170642000048877},
-	{  -0.859533468559838},
-	{    1.46551724137931},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_8_rows = 10;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_8_cols = 10;
-
-static const double cla_matrix_ls_solve_bck_a_8_matrix[10][10] = {
-	{98, 4,81,21,37,66,70,67,38,69},
-	{ 0,76,83,58,75,12,65,56,63,23},
-	{ 0, 0,10,63,24,13,80, 4,99,23},
-	{ 0, 0, 0, 8,82,16,26, 9,69,29},
-	{ 0, 0, 0, 0,30,20,74,86,77,57},
-	{ 0, 0, 0, 0, 0,70,78,89, 7,57},
-	{ 0, 0, 0, 0, 0, 0, 6,98,12,42},
-	{ 0, 0, 0, 0, 0, 0, 0,83,24,32},
-	{ 0, 0, 0, 0, 0, 0, 0, 0,89,96},
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,23},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_8_rows = 10;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_8_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_8_matrix[10][1] = {
-	{48},
-	{27},
-	{16},
-	{23},
-	{22},
+	{14},
+	{32},
+	{86},
+	{87},
+	{ 7},
 	{15},
+	{69},}, 
+{	{55},
+	{12},
+	{24},
 	{13},
-	{74},
-	{55},
-	{98},};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_8_rows = 10;
-
-static const uint16_t cla_matrix_ls_solve_bck_x_8_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_x_8_matrix[10][1] = {
-	{-2216.64865013336},
-	{-2871.93045747023},
-	{ 2917.73769254210},
-	{-448.969301349908},
-	{ 49.1486465460792},
-	{ 25.8537693799835},
-	{-26.2218772500849},
-	{0.399091235484194},
-	{-3.97801660967269},
-	{ 4.26086956521739},};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_9_rows = 4;
-
-static const uint16_t cla_matrix_ls_solve_bck_a_9_cols = 4;
-
-static const double cla_matrix_ls_solve_bck_a_9_matrix[4][4] = {
-	{39,59,34,78},
-	{ 0,10,41,42},
-	{ 0, 0,25,76},
-	{ 0, 0, 0,14},};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_9_rows = 4;
-
-static const uint16_t cla_matrix_ls_solve_bck_b_9_cols = 1;
-
-static const double cla_matrix_ls_solve_bck_b_9_matrix[4][1] = {
-	{76},
-	{77},
+	{63},
+	{60},
+	{68},}, 
+{	{39},
+	{ 7},
+	{58},
 	{80},
-	{95},};
+	{41},
+	{12},
+	{43},
+	{ 6},
+	{46},}, 
+{	{ 6},
+	{75},
+	{42},
+	{ 9},
+	{67},
+	{76},
+	{72},
+	{10},
+	{23},
+	{66},
+	{65},
+	{24},}, 
+{	{40},
+	{98},}, 
+{	{28},
+	{61},
+	{16},
+	{ 4},
+	{49},
+	{34},
+	{89},
+	{66},
+	{35},}, 
+{	{72},}, 
+{	{89},
+	{83},
+	{51},
+	{12},
+	{25},}, };
 
-static const uint16_t cla_matrix_ls_solve_bck_x_9_rows = 4;
 
-static const uint16_t cla_matrix_ls_solve_bck_x_9_cols = 1;
+static const uint16_t cla_matrix_ls_solve_bck_x_rows[10] = {2, 3, 13, 7, 9, 12, 2, 9, 1, 5, };
 
-static const double cla_matrix_ls_solve_bck_x_9_matrix[4][1] = {
-	{-73.0637362637363},
-	{ 50.6571428571429},
-	{-17.4285714285714},
-	{ 6.78571428571429},};
+static const uint16_t cla_matrix_ls_solve_bck_x_cols[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
 
-static const uint16_t cla_matrix_ls_solve_bck_a_rows[10] = { cla_matrix_ls_solve_bck_a_0_rows, cla_matrix_ls_solve_bck_a_1_rows, cla_matrix_ls_solve_bck_a_2_rows, cla_matrix_ls_solve_bck_a_3_rows, cla_matrix_ls_solve_bck_a_4_rows, cla_matrix_ls_solve_bck_a_5_rows, cla_matrix_ls_solve_bck_a_6_rows, cla_matrix_ls_solve_bck_a_7_rows, cla_matrix_ls_solve_bck_a_8_rows, cla_matrix_ls_solve_bck_a_9_rows,};
-
-static const uint16_t cla_matrix_ls_solve_bck_a_cols[10] = { cla_matrix_ls_solve_bck_a_0_cols, cla_matrix_ls_solve_bck_a_1_cols, cla_matrix_ls_solve_bck_a_2_cols, cla_matrix_ls_solve_bck_a_3_cols, cla_matrix_ls_solve_bck_a_4_cols, cla_matrix_ls_solve_bck_a_5_cols, cla_matrix_ls_solve_bck_a_6_cols, cla_matrix_ls_solve_bck_a_7_cols, cla_matrix_ls_solve_bck_a_8_cols, cla_matrix_ls_solve_bck_a_9_cols,};
-
-static const double *cla_matrix_ls_solve_bck_a_mats[10] = { &cla_matrix_ls_solve_bck_a_0_matrix[0][0], &cla_matrix_ls_solve_bck_a_1_matrix[0][0], &cla_matrix_ls_solve_bck_a_2_matrix[0][0], &cla_matrix_ls_solve_bck_a_3_matrix[0][0], &cla_matrix_ls_solve_bck_a_4_matrix[0][0], &cla_matrix_ls_solve_bck_a_5_matrix[0][0], &cla_matrix_ls_solve_bck_a_6_matrix[0][0], &cla_matrix_ls_solve_bck_a_7_matrix[0][0], &cla_matrix_ls_solve_bck_a_8_matrix[0][0], &cla_matrix_ls_solve_bck_a_9_matrix[0][0],};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_rows[10] = { cla_matrix_ls_solve_bck_b_0_rows, cla_matrix_ls_solve_bck_b_1_rows, cla_matrix_ls_solve_bck_b_2_rows, cla_matrix_ls_solve_bck_b_3_rows, cla_matrix_ls_solve_bck_b_4_rows, cla_matrix_ls_solve_bck_b_5_rows, cla_matrix_ls_solve_bck_b_6_rows, cla_matrix_ls_solve_bck_b_7_rows, cla_matrix_ls_solve_bck_b_8_rows, cla_matrix_ls_solve_bck_b_9_rows,};
-
-static const uint16_t cla_matrix_ls_solve_bck_b_cols[10] = { cla_matrix_ls_solve_bck_b_0_cols, cla_matrix_ls_solve_bck_b_1_cols, cla_matrix_ls_solve_bck_b_2_cols, cla_matrix_ls_solve_bck_b_3_cols, cla_matrix_ls_solve_bck_b_4_cols, cla_matrix_ls_solve_bck_b_5_cols, cla_matrix_ls_solve_bck_b_6_cols, cla_matrix_ls_solve_bck_b_7_cols, cla_matrix_ls_solve_bck_b_8_cols, cla_matrix_ls_solve_bck_b_9_cols,};
-
-static const double *cla_matrix_ls_solve_bck_b_mats[10] = { &cla_matrix_ls_solve_bck_b_0_matrix[0][0], &cla_matrix_ls_solve_bck_b_1_matrix[0][0], &cla_matrix_ls_solve_bck_b_2_matrix[0][0], &cla_matrix_ls_solve_bck_b_3_matrix[0][0], &cla_matrix_ls_solve_bck_b_4_matrix[0][0], &cla_matrix_ls_solve_bck_b_5_matrix[0][0], &cla_matrix_ls_solve_bck_b_6_matrix[0][0], &cla_matrix_ls_solve_bck_b_7_matrix[0][0], &cla_matrix_ls_solve_bck_b_8_matrix[0][0], &cla_matrix_ls_solve_bck_b_9_matrix[0][0],};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_rows[10] = { cla_matrix_ls_solve_bck_x_0_rows, cla_matrix_ls_solve_bck_x_1_rows, cla_matrix_ls_solve_bck_x_2_rows, cla_matrix_ls_solve_bck_x_3_rows, cla_matrix_ls_solve_bck_x_4_rows, cla_matrix_ls_solve_bck_x_5_rows, cla_matrix_ls_solve_bck_x_6_rows, cla_matrix_ls_solve_bck_x_7_rows, cla_matrix_ls_solve_bck_x_8_rows, cla_matrix_ls_solve_bck_x_9_rows,};
-
-static const uint16_t cla_matrix_ls_solve_bck_x_cols[10] = { cla_matrix_ls_solve_bck_x_0_cols, cla_matrix_ls_solve_bck_x_1_cols, cla_matrix_ls_solve_bck_x_2_cols, cla_matrix_ls_solve_bck_x_3_cols, cla_matrix_ls_solve_bck_x_4_cols, cla_matrix_ls_solve_bck_x_5_cols, cla_matrix_ls_solve_bck_x_6_cols, cla_matrix_ls_solve_bck_x_7_cols, cla_matrix_ls_solve_bck_x_8_cols, cla_matrix_ls_solve_bck_x_9_cols,};
-
-static const double *cla_matrix_ls_solve_bck_x_mats[10] = { &cla_matrix_ls_solve_bck_x_0_matrix[0][0], &cla_matrix_ls_solve_bck_x_1_matrix[0][0], &cla_matrix_ls_solve_bck_x_2_matrix[0][0], &cla_matrix_ls_solve_bck_x_3_matrix[0][0], &cla_matrix_ls_solve_bck_x_4_matrix[0][0], &cla_matrix_ls_solve_bck_x_5_matrix[0][0], &cla_matrix_ls_solve_bck_x_6_matrix[0][0], &cla_matrix_ls_solve_bck_x_7_matrix[0][0], &cla_matrix_ls_solve_bck_x_8_matrix[0][0], &cla_matrix_ls_solve_bck_x_9_matrix[0][0],};
+static const double cla_matrix_ls_solve_bck_x_mats[10][15][15] = {
+{	{ 3.42884250474383},
+	{0.322580645161290},}, 
+{	{-5.63618928496977},
+	{0.721367521367521},
+	{ 5.55555555555556},}, 
+{	{ -3.32951144466239},
+	{ -3.67399765636327},
+	{  2.83000404417491},
+	{ -2.53384131009255},
+	{  1.94695465815496},
+	{  3.64810908318451},
+	{ 0.266283556460818},
+	{ -4.04352699779564},
+	{-0.810464491460048},
+	{  4.23316686110142},
+	{-0.891049887548559},
+	{-0.100592925782049},
+	{ 0.945205479452055},}, 
+{	{-3.05605627444641},
+	{ 47.9806692552121},
+	{ 6.93026402784342},
+	{-6.30086495043191},
+	{0.575127692649345},
+	{0.657309941520468},
+	{0.894736842105263},}, 
+{	{ 0.128999196358684},
+	{  1.92558609453752},
+	{ -5.75533827832182},
+	{  1.45980265832576},
+	{ 0.160493064126234},
+	{ 0.618600578483302},
+	{-0.492614936550863},
+	{-0.732655502392344},
+	{  1.04545454545455},}, 
+{	{  10342.6945513335},
+	{ -2982.35629951221},
+	{  1938.37364700903},
+	{ -1573.68563295702},
+	{ -302.876355204708},
+	{  237.757039923040},
+	{ -157.512525252525},
+	{ -70.8049696969697},
+	{  50.7694545454545},
+	{-0.323030303030303},
+	{ -4.03333333333333},
+	{  2.00000000000000},}, 
+{	{-0.133058984910837},
+	{  1.81481481481481},}, 
+{	{0.986987983016037},
+	{ 3.60472037409621},
+	{-1.81532907196970},
+	{-1.12501234082850},
+	{0.527116578014184},
+	{-1.05937500000000},
+	{0.634375000000000},
+	{0.630208333333333},
+	{0.583333333333333},}, 
+{	{1.84615384615385},}, 
+{	{ 0.445784935884164},
+	{0.0897259375819565},
+	{ 0.548526422764228},
+	{ 0.262195121951220},
+	{ 0.304878048780488},}, };
 
 #ifdef __cplusplus
 }

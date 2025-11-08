@@ -170,14 +170,14 @@ esp_err_t cla_matrix_create(const uint16_t num_rows, const uint16_t num_cols, cl
 
 esp_err_t cla_matrix_create_square(const uint16_t size, cla_matrix_ptr_t *const m) {
     ESP_RETURN_ON_FALSE( (size != 0), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size must be greater than 0" );
-    //ESP_RETURN_ON_FALSE( (size <= CLA_MATRIX_ROW_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size exceeds maximum allowed" );
+    ESP_RETURN_ON_FALSE( (size <= CLA_MATRIX_ROW_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size exceeds maximum allowed" );
     ESP_RETURN_ON_ERROR( cla_matrix_create(size, size, m), TAG, "Unable to create matrix instance, create square matrix failed" );
     return ESP_OK;
 }
 
 esp_err_t cla_matrix_create_identity(const uint16_t size, cla_matrix_ptr_t *const m) {
     ESP_RETURN_ON_FALSE( (size != 0), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size must be greater than 0" );
-    //ESP_RETURN_ON_FALSE( (size <= CLA_MATRIX_ROW_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size exceeds maximum allowed" );
+    ESP_RETURN_ON_FALSE( (size <= CLA_MATRIX_ROW_SIZE_MAX), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, size exceeds maximum allowed" );
     ESP_RETURN_ON_ERROR( cla_matrix_create(size, size, m), TAG, "Unable to create matrix instance, create square matrix failed" );
     for(uint16_t i = 0; i < (*m)->num_rows; i++) {
         (*m)->data[i][i] = 1.0;
@@ -197,7 +197,7 @@ esp_err_t cla_matrix_delete(cla_matrix_ptr_t m) {
 
 esp_err_t cla_matrix_print(cla_matrix_ptr_t m) {
     ESP_ARG_CHECK(m);
-    const char *fmt = "%.4f\t\t";
+    const char *fmt = "%.4lf\t\t";
     printf("\n");
     for(uint16_t i = 0; i < m->num_rows; i++) {
         for(uint16_t j = 0; j < m->num_cols; j++) {
@@ -753,13 +753,13 @@ esp_err_t cla_matrix_lup_solve(const cla_matrix_ptr_t m, cla_matrix_lup_ptr_t *c
     ESP_RETURN_ON_ERROR( cla_matrix_create_identity(m->num_rows, &p), TAG, "Unable to create matrix identity instance, create P matrix failed" );
     uint16_t num_permutations = 0;
     for(uint16_t j = 0; j < u->num_cols; j++) {
-        uint16_t pivot;
-        ESP_RETURN_ON_ERROR( cla_matrix_get_abs_max_row(u, j, &pivot), TAG, "Unable to get absolute maximum row for pivoting" );
-        ESP_RETURN_ON_FALSE( fabs(u->data[pivot][j]) > CLA_MATRIX_MIN_COEF, ESP_ERR_INVALID_ARG, TAG, "Matrix is singular, cannot perform LUP decomposition" );
-        if(pivot != j) {
-            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot, &u), TAG, "Unable to swap rows in U matrix for pivoting" );
-            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot, &l), TAG, "Unable to swap rows in L matrix for pivoting" );
-            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot, &p), TAG, "Unable to swap rows in P matrix for pivoting" );
+        uint16_t pivot_row;
+        ESP_RETURN_ON_ERROR( cla_matrix_get_abs_max_row(u, j, &pivot_row), TAG, "Unable to get absolute maximum row for pivoting" );
+        ESP_RETURN_ON_FALSE( fabs(u->data[pivot_row][j]) > CLA_MATRIX_MIN_COEF, ESP_ERR_INVALID_ARG, TAG, "Matrix is singular, cannot perform LUP decomposition" );
+        if(pivot_row != j) {
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot_row, &u), TAG, "Unable to swap rows in U matrix for pivoting" );
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot_row, &l), TAG, "Unable to swap rows in L matrix for pivoting" );
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(j, pivot_row, &p), TAG, "Unable to swap rows in P matrix for pivoting" );
             num_permutations++;
         }
         for(uint16_t i = j + 1; i < u->num_rows; i++) {
@@ -955,7 +955,7 @@ esp_err_t cla_matrix_ls_solve_bck(const cla_matrix_ptr_t m_u, const cla_matrix_p
     ESP_RETURN_ON_ERROR( cla_matrix_create(m_u->num_rows, 1, m_x), TAG, "Unable to create matrix instance, create matrix failed" );
     for(int16_t i = m_u->num_cols - 1; i >= 0; i--) {
         double tmp = m_b->data[i][0];
-        for(uint8_t j = i + 1; j < m_u->num_cols; j++) {
+        for(uint16_t j = i + 1; j < m_u->num_cols; j++) {
             tmp -= m_u->data[i][j] * (*m_x)->data[j][0];
         }
         (*m_x)->data[i][0] = tmp / m_u->data[i][i];
@@ -983,15 +983,15 @@ esp_err_t cla_matrix_get_row_echelon_form(const cla_matrix_ptr_t m, cla_matrix_p
     uint16_t i = 0;
     while(j < (*m_ref)->num_cols && i < (*m_ref)->num_rows) {
         // Find the pivot - the first non-zero entry in the first column of the matrix
-        int16_t pivot = -1;
-        ESP_RETURN_ON_ERROR( cla_matrix_get_pivot_idx(*m_ref, j, i, &pivot), TAG, "Unable to get pivot index, get pivot index failed" );
-        if(pivot < 0) {
+        int16_t pivot_row = -1;
+        ESP_RETURN_ON_ERROR( cla_matrix_get_pivot_idx(*m_ref, i, j, &pivot_row), TAG, "Unable to get pivot index, get pivot index failed" );
+        if(pivot_row < 0) {
             j++;
             continue;
         }
         // We interchange rows moving the pivot to the first row that doesn't have already a pivot in place
-        if(pivot != i) {
-            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(i, pivot, m_ref), TAG, "Unable to swap rows, swap rows failed" );
+        if(pivot_row != i) {
+            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(i, pivot_row, m_ref), TAG, "Unable to swap rows, swap rows failed" );
         }
         // Multiply each element in the pivot row by the inverse of the pivot
         ESP_RETURN_ON_ERROR( cla_matrix_multiply_row(i, 1.0 / (*m_ref)->data[i][j], m_ref), TAG, "Unable to multiply row, multiply row failed" );
@@ -1009,31 +1009,23 @@ esp_err_t cla_matrix_get_row_echelon_form(const cla_matrix_ptr_t m, cla_matrix_p
 
 esp_err_t cla_matrix_get_reduced_row_echelon_form(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_rref) {
     ESP_ARG_CHECK(m);
-    ESP_RETURN_ON_ERROR( cla_matrix_copy(m, m_rref), TAG, "Unable to copy matrix instance, copy matrix failed" );
-    uint16_t j = 0;
-    uint16_t i = 0;
-    while(j < (*m_rref)->num_cols && i < (*m_rref)->num_rows) {
-        // Find the pivot - the first non-zero entry in the first column of the matrix
-        int16_t pivot = -1;
-        ESP_RETURN_ON_ERROR( cla_matrix_get_max_pivot_idx(*m_rref, j, i, &pivot), TAG, "Unable to get pivot index, get pivot index failed" );
-        if(pivot < 0) {
-            j++;
-            continue;
-        }
-        // We interchange rows moving the pivot to the first row that doesn't have already a pivot in place
-        if(pivot != i) {
-            ESP_RETURN_ON_ERROR( cla_matrix_swap_rows(i, pivot, m_rref), TAG, "Unable to swap rows, swap rows failed" );
-        }
-        // We create 1 in the pivot position
-        ESP_RETURN_ON_ERROR( cla_matrix_multiply_row(i, 1.0 / (*m_rref)->data[i][j], m_rref), TAG, "Unable to multiply row, multiply row failed" );
-        // We put zeros on the column with the pivot
-        for(uint16_t k = i+1; k < (*m_rref)->num_rows; k++) {
-            if (!(k==i)) {
-                ESP_RETURN_ON_ERROR( cla_matrix_add_scaled_row(i, k, -(*m_rref)->data[k][j], m_rref), TAG, "Unable to add scaled row, add scaled row failed" );
+    cla_matrix_ptr_t m_echelon = NULL;
+    ESP_RETURN_ON_ERROR( cla_matrix_get_row_echelon_form(m, &m_echelon), TAG, "Unable to get row echelon form, get row echelon form failed" );
+    ESP_RETURN_ON_ERROR( cla_matrix_copy(m_echelon, m_rref), TAG, "Unable to copy matrix instance, copy matrix failed" );
+    for (int16_t i = (*m_rref)->num_rows - 1; i >= 0; i--) {
+        int16_t pivot_col = -1;
+        for (int16_t j = 0; j < (*m_rref)->num_cols; j++) {
+            if (fabs((*m_rref)->data[i][j]) > CLA_MATRIX_MIN_COEF) {
+                pivot_col = j;
+                break;
             }
         }
-        i++;
-        j++;
+        if (pivot_col != -1) {
+            for (int16_t k = i - 1; k >= 0; k--) {
+                ESP_RETURN_ON_ERROR( cla_matrix_add_scaled_row(i, k, -(*m_rref)->data[k][pivot_col], m_rref), TAG, "Unable to add scaled row, add scaled row failed" );
+            }
+        }
     }
+    cla_matrix_delete(m_echelon);
     return ESP_OK;
 }

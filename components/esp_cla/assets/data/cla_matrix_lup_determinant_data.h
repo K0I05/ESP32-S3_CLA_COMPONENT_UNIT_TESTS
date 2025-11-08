@@ -15,161 +15,99 @@ extern "C" {
 static const uint8_t cla_matrix_lup_determinant_cases = 10;
 
 
-static const uint16_t cla_matrix_lup_determinant_a_0_rows = 14;
+static const uint16_t cla_matrix_lup_determinant_rows[10] = {11, 14, 12, 7, 2, 11, 4, 3, 14, 7, };
 
-static const uint16_t cla_matrix_lup_determinant_a_0_cols = 14;
+static const uint16_t cla_matrix_lup_determinant_cols[10] = {11, 14, 12, 7, 2, 11, 4, 3, 14, 7, };
 
-static const double cla_matrix_lup_determinant_a_0_matrix[14][14] = {
-	{92,57, 81,17,74,14,89,85,46, 6,71,71, 71,45},
-	{47,66, 74,77,83,13,54,69, 7, 5,29,70,  2,22},
-	{98,84, 13,37, 7,58,50,31,87,16,10,15,  8,18},
-	{54,46, 53,81, 8,81,46,22,35, 2,13,64, 37,91},
-	{ 0,78,  7,63,63,94,86,50, 9,19,48,85,  6, 8},
-	{10,14,  0,72,48,58,32,60, 8,87, 8,24, 88,70},
-	{72, 3,  9,36,73,55, 8,29,56,16,68,15, 39,99},
-	{50,52, 59,14,71,72,74,30,34,67,55,73,  9,40},
-	{75,67, 96,30,74,81,44,12,68,74,25,47, 69,41},
-	{44,63, 74,53,49,74,39,41, 2,99,87,85, 28,83},
-	{48,81,  8,46,75, 3, 8,69,43,98, 8,12, 61,69},
-	{ 8,53, 26,32,89,59,35,54,60,94,56,81,  6,49},
-	{83,39,100,99, 4,68,44,31,12,60,48,60,100,26},
-	{81,14, 32,14,26,70,76,10,52, 6,83,87, 90,11},};
+static const double cla_matrix_lup_determinant_mats[10][15][15] = {
+{	{80,35, 7, 50,17,44,17, 67,54, 55, 3},
+	{59,10,95, 33,89,18,39, 61, 5, 88,84},
+	{89, 6, 0,  1,68,49,44, 64, 3, 83,91},
+	{94,21,94, 26,12,75,97, 88,12, 63,59},
+	{48,88,82,100,10,11,20, 22,76, 73,39},
+	{96,96,12,  5, 4,51,61,100,73, 11,76},
+	{70,99, 7, 24,12,81,66,  4, 0, 89,96},
+	{91,10,61,100,15, 3,36, 78, 5,100,60},
+	{90,98,57, 22,47,74,16, 47, 9, 99,33},
+	{24,77,88, 33,40,33,71, 85,94, 81,20},
+	{59, 1,65, 11,21,12,18,  7,52, 41,41},}, 
+{	{ 3,12,32,34,80,42,56, 5,52,62,27,86,12,35},
+	{ 6,95,32,82,13,78,50,98,70,74,85,12,76, 5},
+	{98,40,33,76,36,78,31,61,11,65, 4,49,85,59},
+	{66, 4,88,93,71,86,18,49,24,93,73,70, 6,37},
+	{80,40,37,24,20, 9,46,68,67,80,58,85,24,83},
+	{71, 0,86,22,56,33,65,81,37, 8,68,58,22,68},
+	{94,20,83,33,97,11,16,81,99,97,38,28,30, 9},
+	{12,48,33,90,80,55,29, 6,51,48, 8,37,24, 8},
+	{ 8,92,92,68,71,22, 0,60,30,33,12, 0,44,22},
+	{ 1,69,16,20, 2,22,51,18,24,74,16,88,75,43},
+	{61,51,21, 7,85,37,40,89,95,66,77,11,88,22},
+	{27,74,23,15,59,28,71,24, 4, 8,99,40,96,75},
+	{18,53,13, 6,43,30,92,11,25,93,87,11,18,58},
+	{55,79,87,74,74,11,21,76,22,76,97, 2, 8,35},}, 
+{	{51,75,35,98,79,38, 53,40,46,48, 7,19},
+	{50,66,96,44,93,55, 92,82,19,40,63,29},
+	{62,34,10, 2,25,59, 63,66,49,19,20,64},
+	{97,22,15, 6,90,26, 11, 2,82,23,22,60},
+	{87, 7,57,99,37,59, 82,91, 0,22,15,52},
+	{58,85,96,17,37,69,100,66,47, 7,50,27},
+	{11,17,50,24,52,49, 10,33,26,71,64,42},
+	{16, 4,86,94, 5,33, 97,14,51,98, 1,20},
+	{ 4,38,48,16,60,28, 48,56,25,11,31,86},
+	{51,76,98,70,27,76, 30,29, 9, 2,71,80},
+	{37,38, 2,22,57,95, 72,61,21,11,31,87},
+	{53,17,39,61, 1, 6, 32,27,33,30,49,89},}, 
+{	{78,16,98,85,12,63,75},
+	{26,63,71,44,87,75,27},
+	{29,23,27,28,99, 7,67},
+	{94,76,32,43,13,17,47},
+	{51,44,11,31,37,94,90},
+	{93,73,17,48,83,61,71},
+	{ 2,73,36,47,87,16,89},}, 
+{	{90,35},
+	{73,30},}, 
+{	{37,40,56,16, 33,68, 1,21, 3,57, 69},
+	{50, 9,41,56, 84,43, 3,29,62,52, 78},
+	{10,79,51,76, 31,71,26,33,74,24,  8},
+	{65, 2,63, 4,100,63,63,12,41,99, 37},
+	{99, 4,53,80, 62,16,71,78,64,80, 75},
+	{10,79,26,97, 37,89,80,85,45,74,100},
+	{82,19,45,89, 82,41,48,94,70, 9, 15},
+	{67,89,60,46, 95,98,70,69,79,51, 28},
+	{80,14,89,12, 25,11,59,43,44,96, 18},
+	{51,95,91,50, 79,46,45,61,51,53, 48},
+	{68,40,52,81, 85,29,76,65,91,86, 57},}, 
+{	{42,66,76,73},
+	{15,53,41,92},
+	{94,37,90,11},
+	{80,38,48,44},}, 
+{	{12,69,47},
+	{10,31,65},
+	{72,60,90},}, 
+{	{70,27,89,24,12,26,28,76,80,63,65,34,24,100},
+	{56, 5,95, 1,10,59,52,98, 3,90,31, 3,81, 98},
+	{29,24,57, 2,50,17,36,56,73,84,14,94,87, 55},
+	{17,74,24,93,98,68, 2,49,92,59,46,21,41, 85},
+	{75,63,60,14, 6,84,20,69,85,52,55,79,41, 77},
+	{16,36,79,73,50,21,54,62,84,40,14,75,16, 15},
+	{71,24,97,32,67,98,49,50, 5,17,83,99,15, 17},
+	{57,80,86,76,90,24, 8,97,20,25,18,61,28, 52},
+	{71,45, 3,43,29,41,41,24,97,54,90,55,59, 69},
+	{23,54,34,62,84,67,40,32,90,60,71,59,16, 21},
+	{23,22,61,29,45,80, 1, 0,61,57,10,56,22, 17},
+	{93,70,35,95,94,48,85,37,51,60,64,92,74, 93},
+	{35,50, 7,80,56,77,63,35,84,11,46,77,68, 59},
+	{89,92,87,47,87,43,55,51,81,51,54,44,26, 67},}, 
+{	{51,66, 90,23,79,45,68},
+	{92, 2, 13,20,50,61, 6},
+	{79,31, 59,67,91,69,29},
+	{93,51, 24,95,93,10,22},
+	{79,43, 90, 7,91,78,86},
+	{50,40, 75,73,63,48,74},
+	{48,65,100,15,48,29,62},}, };
 
-static const double cla_matrix_lup_determinant_x_0_val = 1.970340210483768e+26;
 
-static const uint16_t cla_matrix_lup_determinant_a_1_rows = 12;
-
-static const uint16_t cla_matrix_lup_determinant_a_1_cols = 12;
-
-static const double cla_matrix_lup_determinant_a_1_matrix[12][12] = {
-	{55,53, 99, 9,52,96,61,54,29,14,20,84},
-	{36,97, 50, 6,85, 7,86,85,70,53, 9,81},
-	{34,23,  1, 2,43,46,82,60,33,84,19, 7},
-	{38,89, 20,74,81,14,20,95,67,57,79,83},
-	{43,46, 37,16,95,72, 0,81, 4, 2,29,13},
-	{29,18, 24,24,30,83,78,89,56,89,20,83},
-	{78,12,100,72, 5,27,95, 3,29,47,59,68},
-	{80,28, 22,89,31,49,52,17,22,25,86,56},
-	{32,87, 47,18,21,96,35,51,34,96,36,84},
-	{81,36, 18,27,76, 1,76,58,74,97,16,63},
-	{52,55, 10,81,90,53,88,36,70,87,54,29},
-	{54,16,  6,57,87,25,10,81, 7, 6, 3,89},};
-
-static const double cla_matrix_lup_determinant_x_1_val = -1.241290753522604e+22;
-
-static const uint16_t cla_matrix_lup_determinant_a_2_rows = 4;
-
-static const uint16_t cla_matrix_lup_determinant_a_2_cols = 4;
-
-static const double cla_matrix_lup_determinant_a_2_matrix[4][4] = {
-	{69,30, 86,66},
-	{ 6,22, 14,11},
-	{23,77,100,95},
-	{13,69, 58,57},};
-
-static const double cla_matrix_lup_determinant_x_2_val = 284546.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_3_rows = 1;
-
-static const uint16_t cla_matrix_lup_determinant_a_3_cols = 1;
-
-static const double cla_matrix_lup_determinant_a_3_matrix[1][1] = {
-	{18},};
-
-static const double cla_matrix_lup_determinant_x_3_val = 18.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_4_rows = 5;
-
-static const uint16_t cla_matrix_lup_determinant_a_4_cols = 5;
-
-static const double cla_matrix_lup_determinant_a_4_matrix[5][5] = {
-	{42,10,81,13,51},
-	{62,56,93,74,33},
-	{57,47,34,78,58},
-	{51,60,72,60,98},
-	{88,11,23,76, 5},};
-
-static const double cla_matrix_lup_determinant_x_4_val = -160859844.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_5_rows = 14;
-
-static const uint16_t cla_matrix_lup_determinant_a_5_cols = 14;
-
-static const double cla_matrix_lup_determinant_a_5_matrix[14][14] = {
-	{81,40,31,44,68,12,89, 36,36, 40,62,33,83,28},
-	{10,39,70,10,65,26,81, 27,50,  2,61,83, 7,53},
-	{26,54,59,93,76,38,25, 44,26, 99,66, 7,68,71},
-	{90,15,28, 6,14,97,33, 11,94, 34,70,34,43,33},
-	{83,31,38,91,63,84,40, 33,12,100,75,84,61,20},
-	{ 1,53,31,95,30,25,29, 24,53, 52,31,51,54, 0},
-	{ 5,22, 9,55,73,39,88, 14,57, 91, 4,32,21,49},
-	{83,71,48,30,87,56, 1, 34,74, 48,36,46,52,79},
-	{75,43,74,24,63,80,43, 22, 6,  5,30,22, 6,13},
-	{26,12,17,19,27,65,51,100,96, 81,57,28, 3,92},
-	{33,51,89,47,18,62, 6, 39,42, 98,99, 2,32,39},
-	{81, 5,65, 2,88,73,87, 65,46, 60,64,99,99,69},
-	{81,64,78,78,60, 0,15, 95,16, 28,95,44,17,94},
-	{52,45,62,68,73,29,84, 35, 8, 24,72,36,64,66},};
-
-static const double cla_matrix_lup_determinant_x_5_val = 4.451294697402483e+26;
-
-static const uint16_t cla_matrix_lup_determinant_a_6_rows = 6;
-
-static const uint16_t cla_matrix_lup_determinant_a_6_cols = 6;
-
-static const double cla_matrix_lup_determinant_a_6_matrix[6][6] = {
-	{21,18,100,96, 2,14},
-	{56,78, 23,60,18,26},
-	{15,58, 11,46,46,80},
-	{70,97, 35,37, 1,40},
-	{70,90, 53,33,31,58},
-	{67,97, 94,36,78,76},};
-
-static const double cla_matrix_lup_determinant_x_6_val = 17723760272.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_7_rows = 2;
-
-static const uint16_t cla_matrix_lup_determinant_a_7_cols = 2;
-
-static const double cla_matrix_lup_determinant_a_7_matrix[2][2] = {
-	{38,43},
-	{ 8,43},};
-
-static const double cla_matrix_lup_determinant_x_7_val = 1290.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_8_rows = 7;
-
-static const uint16_t cla_matrix_lup_determinant_a_8_cols = 7;
-
-static const double cla_matrix_lup_determinant_a_8_matrix[7][7] = {
-	{ 7,43, 9,96,72,66,91},
-	{48,94,94,25,77,50,10},
-	{14,89,79,73,93,93,68},
-	{74, 5,98,15,89,73,50},
-	{44,82, 4,29,46,31,19},
-	{18,70,15,34,85,45,64},
-	{83,70,53, 8,96,62,67},};
-
-static const double cla_matrix_lup_determinant_x_8_val = 1356080128101.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_9_rows = 3;
-
-static const uint16_t cla_matrix_lup_determinant_a_9_cols = 3;
-
-static const double cla_matrix_lup_determinant_a_9_matrix[3][3] = {
-	{75,85,25},
-	{28,17,51},
-	{96,76, 2},};
-
-static const double cla_matrix_lup_determinant_x_9_val = 135650.0;
-
-static const uint16_t cla_matrix_lup_determinant_a_rows[10] = { cla_matrix_lup_determinant_a_0_rows, cla_matrix_lup_determinant_a_1_rows, cla_matrix_lup_determinant_a_2_rows, cla_matrix_lup_determinant_a_3_rows, cla_matrix_lup_determinant_a_4_rows, cla_matrix_lup_determinant_a_5_rows, cla_matrix_lup_determinant_a_6_rows, cla_matrix_lup_determinant_a_7_rows, cla_matrix_lup_determinant_a_8_rows, cla_matrix_lup_determinant_a_9_rows,};
-
-static const uint16_t cla_matrix_lup_determinant_a_cols[10] = { cla_matrix_lup_determinant_a_0_cols, cla_matrix_lup_determinant_a_1_cols, cla_matrix_lup_determinant_a_2_cols, cla_matrix_lup_determinant_a_3_cols, cla_matrix_lup_determinant_a_4_cols, cla_matrix_lup_determinant_a_5_cols, cla_matrix_lup_determinant_a_6_cols, cla_matrix_lup_determinant_a_7_cols, cla_matrix_lup_determinant_a_8_cols, cla_matrix_lup_determinant_a_9_cols,};
-
-static const double *cla_matrix_lup_determinant_a_mats[10]  = { &cla_matrix_lup_determinant_a_0_matrix[0][0], &cla_matrix_lup_determinant_a_1_matrix[0][0], &cla_matrix_lup_determinant_a_2_matrix[0][0], &cla_matrix_lup_determinant_a_3_matrix[0][0], &cla_matrix_lup_determinant_a_4_matrix[0][0], &cla_matrix_lup_determinant_a_5_matrix[0][0], &cla_matrix_lup_determinant_a_6_matrix[0][0], &cla_matrix_lup_determinant_a_7_matrix[0][0], &cla_matrix_lup_determinant_a_8_matrix[0][0], &cla_matrix_lup_determinant_a_9_matrix[0][0],};
-
-static const double cla_matrix_lup_determinant_x_vals[10]  = { cla_matrix_lup_determinant_x_0_val, cla_matrix_lup_determinant_x_1_val, cla_matrix_lup_determinant_x_2_val, cla_matrix_lup_determinant_x_3_val, cla_matrix_lup_determinant_x_4_val, cla_matrix_lup_determinant_x_5_val, cla_matrix_lup_determinant_x_6_val, cla_matrix_lup_determinant_x_7_val, cla_matrix_lup_determinant_x_8_val, cla_matrix_lup_determinant_x_9_val,};
+static const double cla_matrix_lup_determinant_vals[10] = {-1.4264152067752659e+20,9.945175443700097e+25,-3.557260407459719e+22,10292091878194.0,145.0,-4.360228761869934e+19,3050116.0,170796.0,-5.263485410414308e+25,-695883402536.0,};
 
 #ifdef __cplusplus
 }

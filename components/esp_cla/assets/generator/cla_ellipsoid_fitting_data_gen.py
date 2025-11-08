@@ -102,7 +102,7 @@ def get_ellipsoid_coeffs(center, radii, rotation_angles):
     return [c * scale for c in [A, B, C, 2*D_coeff, 2*E_coeff, 2*F_coeff, 2*G, 2*H, 2*I]]
 
 def write_header_file(filename, test_cases):
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write("/*                  MIT License (MIT)                       */\n")
         f.write("/*           AUTO GENERATED CODE - DO NOT MODIFY            */\n")
         f.write("/* Copyright (c) 2025 Eric Gionet (gionet.c.eric@gmail.com) */\n\n")

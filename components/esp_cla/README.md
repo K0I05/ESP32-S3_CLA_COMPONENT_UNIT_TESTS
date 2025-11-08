@@ -103,6 +103,7 @@ The following data generators have been implemented to date:
 * `cls_matrix_lup_solve_data_gen.py`: Generates data to validate LUP solve calculations and algorithms.
 * `cls_matrix_lup_determinant_data_gen.py`: Generates data to validate LUP determinant calculations and algorithms.
 * `cls_matrix_qr_solve_data_gen.py`: Generates data to validate QR solve calculations and algorithms.
+* `cla_matrix_qr_decomposition_data_gen.py`: Generates data to validate QR decomposition calculations and algorithms.
 
 The generated data stored in the header file use a common nomenclature for variables as shown in the following example (`cla_matrix_ls_solve_data_gen.py`):
 

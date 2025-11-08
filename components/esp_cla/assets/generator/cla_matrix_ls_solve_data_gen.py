@@ -49,7 +49,7 @@ x_rows = ""
 x_cols = ""
 x_mats = ""
 
-fs = open(filename, "w")
+fs = open(filename, "w", encoding="utf-8")
 
 fs.write("/*                  MIT License (MIT)                       */")
 fs.write("\n")
@@ -69,58 +69,50 @@ fs.write("#endif\n")
 fs.write("\n")
 fs.write("\nstatic const uint8_t cla_matrix_ls_solve_cases = {};\n".format(num_tests))
 fs.write("\n")
+
 for i in range(num_tests):
-    print("Creating test case: ", i)
-    t_case = i
+    print("Creating test case: ", i + 1)
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)            
     B = randMatrix(M_dim, 1, min=min_val, max=max_val, percent=100)            
     x = M.LUsolve(B).applyfunc(N)
     
-    a_rows += " cla_matrix_ls_solve_a_{}_rows,".format(t_case)
-    a_cols += " cla_matrix_ls_solve_a_{}_cols,".format(t_case)
-    a_mats += " &cla_matrix_ls_solve_a_{}_matrix[0][0],".format(t_case)
+    a_rows += "{}, ".format(M_dim)
+    a_cols += "{}, ".format(M_dim)
+    a_mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_{}_cols = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const double cla_matrix_ls_solve_a_{}_matrix[{}][{}] = ".format(t_case, M_dim, M_dim))
-    fs.write("{\n")
-    fs.write(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
-    fs.write("};\n")
+    b_rows += "{}, ".format(M_dim)
+    b_cols += "{}, ".format(M_dim)
+    b_mats += "\n{{{}}}, ".format(B.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
-    b_rows += " cla_matrix_ls_solve_b_{}_rows,".format(t_case)
-    b_cols += " cla_matrix_ls_solve_b_{}_cols,".format(t_case)
-    b_mats += " &cla_matrix_ls_solve_b_{}_matrix[0][0],".format(t_case)
-    
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_{}_cols = {};\n".format(t_case, 1))
-    fs.write("\nstatic const double cla_matrix_ls_solve_b_{}_matrix[{}][{}] = ".format(t_case, M_dim, 1))
-    fs.write("{\n")
-    fs.write(B.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))           
-    fs.write("};\n")
-    
-    x_rows += " cla_matrix_ls_solve_x_{}_rows,".format(t_case)
-    x_cols += " cla_matrix_ls_solve_x_{}_cols,".format(t_case)
-    x_mats += " &cla_matrix_ls_solve_x_{}_matrix[0][0],".format(t_case)
-    
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_{}_rows = {};\n".format(t_case, M_dim))
-    fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_{}_cols = {};\n".format(t_case, 1))
-    fs.write("\nstatic const double cla_matrix_ls_solve_x_{}_matrix[{}][{}] = ".format(t_case, M_dim, 1))
-    fs.write("{\n")
-    fs.write(x.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
-    fs.write("};\n")
+    x_rows += "{}, ".format(M_dim)
+    x_cols += "{}, ".format(M_dim)
+    x_mats += "\n{{{}}}, ".format(x.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
 
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_rows[{}] = {{{}}};\n".format(num_tests, a_rows))
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_cols[{}] = {{{}}};\n".format(num_tests, a_cols))
-fs.write("\nstatic const double *cla_matrix_ls_solve_a_mats[{}] = {{{}}};\n".format(num_tests, a_mats))
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_rows))
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_cols))
+fs.write("\nstatic const double cla_matrix_ls_solve_a_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(a_mats))
 
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_rows[{}] = {{{}}};\n".format(num_tests, b_rows))
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_cols[{}] = {{{}}};\n".format(num_tests, b_cols))
-fs.write("\nstatic const double *cla_matrix_ls_solve_b_mats[{}] = {{{}}};\n".format(num_tests, b_mats))
+fs.write("\n")
 
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_rows[{}] = {{{}}};\n".format(num_tests, x_rows))
-fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_cols[{}] = {{{}}};\n".format(num_tests, x_cols))
-fs.write("\nstatic const double *cla_matrix_ls_solve_x_mats[{}] = {{{}}};\n".format(num_tests, x_mats))
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(b_rows))
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_b_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(b_cols))
+fs.write("\nstatic const double cla_matrix_ls_solve_b_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(b_mats))
+
+fs.write("\n")
+
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_rows))
+fs.write("\nstatic const uint16_t cla_matrix_ls_solve_x_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_cols))
+fs.write("\nstatic const double cla_matrix_ls_solve_x_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(x_mats))
 
 fs.write("\n")
 fs.write("#ifdef __cplusplus\n")
