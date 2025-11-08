@@ -365,7 +365,7 @@ esp_err_t cla_matrix_solve_cholesky(const cla_matrix_ptr_t m, cla_matrix_ptr_t *
     }
     for(uint16_t i = 0; i < m->num_rows; i++) {
         for(uint16_t j = 0; j <= i; j++) {
-            double sum = 0.0f;
+            double sum = 0.0;
             for(uint16_t k = 0; k < j; k++) {
                 sum += (*m_cholesky)->data[i][k] * (*m_cholesky)->data[j][k];
             }
@@ -488,6 +488,24 @@ esp_err_t cla_matrix_zero_values(cla_matrix_ptr_t *const m) {
  * 
  */
 
+esp_err_t cla_matrix_add_column(cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    uint16_t col_idx = (*m)->num_cols;
+    cla_matrix_ptr_t m_d = NULL;
+    ESP_RETURN_ON_ERROR( cla_matrix_create((*m)->num_rows, (*m)->num_cols + 1, &m_d), TAG, "Unable to create matrix instance, add column to matrix failed" );
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        for(uint16_t j = 0; j < (*m)->num_cols; j++) {
+            m_d->data[i][j] = (*m)->data[i][j];
+        }
+    }
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        m_d->data[i][col_idx] = 0.0;
+    }
+    cla_matrix_delete(*m);
+    *m = m_d;
+    return ESP_OK;
+}
+
 esp_err_t cla_matrix_delete_column(const uint16_t col_idx, cla_matrix_ptr_t *const m) {
     ESP_ARG_CHECK(m);
     ESP_RETURN_ON_FALSE( (col_idx < (*m)->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid column index, column index must be lower than the number of columns" );
@@ -574,7 +592,7 @@ esp_err_t cla_matrix_multiply_column(const uint16_t col_idx, const double scalar
  * 
  */
 
-esp_err_t cla_matrix_add_row(const uint16_t row_idx, const uint16_t row_idx_to_add, const double scalar, cla_matrix_ptr_t *const m) {
+esp_err_t cla_matrix_add_scaled_row(const uint16_t row_idx, const uint16_t row_idx_to_add, const double scalar, cla_matrix_ptr_t *const m) {
     ESP_ARG_CHECK(m);
     ESP_RETURN_ON_FALSE( (row_idx < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index, row index must be lower than the number of rows" );
     ESP_RETURN_ON_FALSE( (row_idx_to_add < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index to add, row index must be lower than the number of rows" );
@@ -582,6 +600,41 @@ esp_err_t cla_matrix_add_row(const uint16_t row_idx, const uint16_t row_idx_to_a
         (*m)->data[row_idx_to_add][j] += scalar * (*m)->data[row_idx][j];
     }
     return ESP_OK;  
+}
+
+esp_err_t cla_matrix_add_row(cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    uint16_t row_idx = (*m)->num_rows;
+    cla_matrix_ptr_t m_d = NULL;
+    ESP_RETURN_ON_ERROR( cla_matrix_create((*m)->num_rows + 1, (*m)->num_cols, &m_d), TAG, "Unable to create matrix instance, add row to matrix failed" );
+    for(uint16_t i = 0; i < (*m)->num_rows; i++) {
+        for(uint16_t j = 0; j < (*m)->num_cols; j++) {
+            m_d->data[i][j] = (*m)->data[i][j];
+        }
+    }
+    for(uint16_t j = 0; j < (*m)->num_cols; j++) {
+        m_d->data[row_idx][j] = 0.0;
+    }
+    cla_matrix_delete(*m);
+    *m = m_d;
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_delete_row(const uint16_t row_idx, cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE( (row_idx < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index, row index must be lower than the number of rows" );
+    cla_matrix_ptr_t m_d = NULL;
+    ESP_RETURN_ON_ERROR( cla_matrix_create((*m)->num_rows - 1, (*m)->num_cols, &m_d), TAG, "Unable to create matrix instance, delete row from matrix failed" );
+    for(uint16_t i = 0, k = 0; i < (*m)->num_rows; i++) {
+        for(uint16_t j = 0; j < (*m)->num_cols; j++) {
+            if(row_idx != i) {
+                m_d->data[k++][j] = (*m)->data[i][j];
+            }
+        }
+    }
+    cla_matrix_delete(*m);
+    *m = m_d;
+    return ESP_OK;
 }
 
 esp_err_t cla_matrix_swap_row(const uint16_t row_idx1, const uint16_t row_idx2, cla_matrix_ptr_t *const m) {
@@ -618,6 +671,15 @@ esp_err_t cla_matrix_divide_row(const uint16_t row_idx, const double divisor, cl
     ESP_RETURN_ON_FALSE( (row_idx < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index, row index must be lower than the number of rows" );
     for(uint16_t i = 0; i < (*m)->num_cols; i++) {
         (*m)->data[row_idx][i] /= divisor; // Reduce row by dividing by a common divisor
+    }
+    return ESP_OK;
+}
+
+esp_err_t cla_matrix_multiply_row(const uint16_t row_idx, const double scalar, cla_matrix_ptr_t *const m) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE( (row_idx < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index, row index must be lower than the number of rows" );
+    for(uint16_t i = 0; i < (*m)->num_cols; i++) {
+        (*m)->data[row_idx][i] *= scalar;
     }
     return ESP_OK;
 }
@@ -702,7 +764,7 @@ esp_err_t cla_matrix_lup_solve(const cla_matrix_ptr_t m, cla_matrix_lup_ptr_t *c
         }
         for(uint16_t i = j + 1; i < u->num_rows; i++) {
             double factor = u->data[i][j] / u->data[j][j];
-            ESP_RETURN_ON_ERROR( cla_matrix_add_row(j, i, -factor, &u), TAG, "Unable to add row to U matrix during elimination" );
+            ESP_RETURN_ON_ERROR( cla_matrix_add_scaled_row(j, i, -factor, &u), TAG, "Unable to add row to U matrix during elimination" );
             l->data[i][j] = factor;
         }
     }

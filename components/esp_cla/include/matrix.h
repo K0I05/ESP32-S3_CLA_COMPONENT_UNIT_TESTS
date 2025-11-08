@@ -492,6 +492,14 @@ esp_err_t cla_matrix_zero_values(cla_matrix_ptr_t *const m);
 
 
 /**
+ * @brief Adds a column to the matrix.
+ * 
+ * @param m Matrix to add column on.
+ * @return esp_err_t ESP_OK on success.
+ */
+esp_err_t cla_matrix_add_column(cla_matrix_ptr_t *const m);
+
+/**
  * @brief Deletes a column from a matrix by column index.
  * 
  * @param col_idx Column index in the matrix to delete.
@@ -567,7 +575,15 @@ esp_err_t cla_matrix_multiply_column(const uint16_t col_idx, const double scalar
  * @param m Matrix to add scaled row on.
  * @return esp_err_t ESP_OK on success.
  */
-esp_err_t cla_matrix_add_row(const uint16_t row_idx, const uint16_t row_idx_to_add, const double scalar, cla_matrix_ptr_t *const m);
+esp_err_t cla_matrix_add_scaled_row(const uint16_t row_idx, const uint16_t row_idx_to_add, const double scalar, cla_matrix_ptr_t *const m);
+
+/**
+ * @brief Adds a row in the matrix.
+ * 
+ * @param m Matrix to add row on.
+ * @return esp_err_t ESP_OK on success.
+ */
+esp_err_t cla_matrix_add_row(cla_matrix_ptr_t *const m);
 
 /**
  * @brief Deletes a row from a matrix by row index.
