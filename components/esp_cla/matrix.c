@@ -142,6 +142,45 @@ static inline esp_err_t cla_matrix_get_max_pivot_idx(const cla_matrix_ptr_t m, c
     return ESP_OK;
 }
 
+/**
+ * @brief Performs a single Jacobi rotation to zero out an off-diagonal element.
+ */
+static void cla_matrix_jacobi_rotate(cla_matrix_ptr_t a, cla_matrix_ptr_t v, int p, int q) {
+    if (fabs(a->data[p][q]) < 1e-12) {
+        return;
+    }
+
+    double tresh, theta, t, c, s;
+    double g = 100.0 * fabs(a->data[p][q]);
+
+    if (g > 1e-12) {
+        double h = a->data[q][q] - a->data[p][p];
+        if (fabs(h) + g == fabs(h)) {
+            t = (a->data[p][q]) / h;
+        } else {
+            theta = 0.5 * h / (a->data[p][q]);
+            t = 1.0 / (fabs(theta) + sqrt(1.0 + theta * theta));
+            if (theta < 0.0) {
+                t = -t;
+            }
+        }
+        c = 1.0 / sqrt(1 + t * t);
+        s = t * c;
+        double tau = s / (1.0 + c);
+        h = t * a->data[p][q];
+
+        a->data[p][p] -= h;
+        a->data[q][q] += h;
+        a->data[p][q] = 0.0;
+
+        for (int i = 0; i < p; i++) { double g_val = a->data[i][p]; double h_val = a->data[i][q]; a->data[i][p] = g_val - s * (h_val + g_val * tau); a->data[i][q] = h_val + s * (g_val - h_val * tau); }
+        for (int i = p + 1; i < q; i++) { double g_val = a->data[p][i]; double h_val = a->data[i][q]; a->data[p][i] = g_val - s * (h_val + g_val * tau); a->data[i][q] = h_val + s * (g_val - h_val * tau); }
+        for (int i = q + 1; i < a->num_rows; i++) { double g_val = a->data[p][i]; double h_val = a->data[q][i]; a->data[p][i] = g_val - s * (h_val + g_val * tau); a->data[q][i] = h_val + s * (g_val - h_val * tau); }
+        for (int i = 0; i < a->num_rows; i++) { double g_val = v->data[i][p]; double h_val = v->data[i][q]; v->data[i][p] = g_val - s * (h_val + g_val * tau); v->data[i][q] = h_val + s * (g_val - h_val * tau); }
+    } else {
+        a->data[p][q] = 0.0;
+    }
+}
 
 /**
  * 
@@ -354,7 +393,7 @@ esp_err_t cla_matrix_get_trace(const cla_matrix_ptr_t m, double *const trace) {
     return ESP_OK;
 }
 
-esp_err_t cla_matrix_solve_cholesky(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_cholesky) {
+esp_err_t cla_matrix_get_cholesky_decomposition(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_cholesky) {
     ESP_ARG_CHECK(m);
     ESP_RETURN_ON_FALSE( (m->is_square), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix, Cholesky decomposition can only be performed on square matrices" );
     ESP_RETURN_ON_ERROR( cla_matrix_create(m->num_rows, m->num_cols, m_cholesky), TAG, "Unable to create matrix instance, Cholesky decomposition failed" );
@@ -381,6 +420,36 @@ esp_err_t cla_matrix_solve_cholesky(const cla_matrix_ptr_t m, cla_matrix_ptr_t *
     return ESP_OK;
 }
 
+esp_err_t cla_matrix_get_eigen_decomposition(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_eigenvectors, cla_matrix_ptr_t *const m_eigenvalues) {
+    ESP_ARG_CHECK(m);
+    ESP_RETURN_ON_FALSE(m->is_square, ESP_ERR_INVALID_ARG, TAG, "Matrix must be square for eigenvalue decomposition.");
+
+    cla_matrix_ptr_t a_copy = NULL;
+    ESP_RETURN_ON_ERROR(cla_matrix_copy(m, &a_copy), TAG, "Failed to copy matrix for eigen decomposition.");
+    ESP_RETURN_ON_ERROR(cla_matrix_create_identity(m->num_rows, m_eigenvectors), TAG, "Failed to create eigenvector matrix.");
+
+    for (int iter = 0; iter < 50; iter++) {
+        for (int p = 0; p < m->num_rows; p++) {
+            for (int q = p + 1; q < m->num_rows; q++) {
+                cla_matrix_jacobi_rotate(a_copy, *m_eigenvectors, p, q);
+            }
+        }
+    }
+
+    ESP_RETURN_ON_ERROR(cla_matrix_create(m->num_rows, m->num_rows, m_eigenvalues), TAG, "Failed to create eigenvalue matrix.");
+    for (int i = 0; i < m->num_rows; i++) {
+        for (int j = 0; j < m->num_rows; j++) {
+            if (i == j) {
+                (*m_eigenvalues)->data[i][j] = a_copy->data[i][j];
+            } else {
+                (*m_eigenvalues)->data[i][j] = 0.0;
+            }
+        }
+    }
+    cla_matrix_delete(a_copy);
+    return ESP_OK;
+}
+
 esp_err_t cla_matrix_copy(const cla_matrix_ptr_t m_src, cla_matrix_ptr_t *const m_dst) {
     ESP_ARG_CHECK(m_src);
     ESP_RETURN_ON_ERROR( cla_matrix_create(m_src->num_rows, m_src->num_cols, m_dst), TAG, "Unable to create matrix instance, copy matrix failed" );
@@ -394,7 +463,6 @@ esp_err_t cla_matrix_copy(const cla_matrix_ptr_t m_src, cla_matrix_ptr_t *const 
 
 esp_err_t cla_matrix_scale(const cla_matrix_ptr_t m, const double scalar, cla_matrix_ptr_t *const m_scaled) {
     ESP_ARG_CHECK(m);
-    ESP_RETURN_ON_FALSE( (m_scaled != 0), ESP_ERR_INVALID_ARG, TAG, "Invalid scaling factor, size must be greater than 0" );
     ESP_RETURN_ON_ERROR( cla_matrix_create(m->num_rows, m->num_cols, m_scaled), TAG, "Unable to create matrix instance, scale matrix failed" );
     for(uint16_t i = 0; i < (*m_scaled)->num_rows; i++) {
         for(uint16_t j = 0; j < (*m_scaled)->num_cols; j++) {

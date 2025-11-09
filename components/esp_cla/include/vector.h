@@ -136,6 +136,14 @@ esp_err_t cla_vector_create(const uint16_t num_cmps, cla_vector_ptr_t *const v);
 esp_err_t cla_vector_delete(cla_vector_ptr_t v);
 
 /**
+ * @brief Prints the vector components to the console.
+ * 
+ * @param v Vector to print to the console.
+ * @return esp_err_t ESP_OK on success. 
+ */
+esp_err_t cla_vector_print(cla_vector_ptr_t v);
+
+/**
  * @brief Adds two vectors component-wise.
  * 
  * @param v1 Vector 1.

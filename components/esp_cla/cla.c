@@ -52,7 +52,7 @@ static const char *TAG = "cla";
 
 esp_err_t cla_matrix_multiply_vector(const cla_matrix_ptr_t m, const cla_vector_ptr_t v, cla_vector_ptr_t *const v_product) {
     ESP_ARG_CHECK(m && v);
-    ESP_RETURN_ON_FALSE( (m->num_rows == v->num_cmps), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix and vector dimensions, number of rows in matrix must match number of components in vector" );
+    ESP_RETURN_ON_FALSE( (m->num_cols == v->num_cmps), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix and vector dimensions, number of columns in matrix must match number of components in vector" );
     ESP_RETURN_ON_ERROR( cla_vector_create(m->num_rows, v_product), TAG, "Unable to create vector instance, matrix-vector multiplication failed" );
     for(uint16_t i = 0; i < m->num_rows; i++) {
         (*v_product)->data[i] = 0.0;
@@ -210,9 +210,9 @@ esp_err_t cla_get_calibration_parameters(const cla_vector_ptr_t v_ellip_coeffs, 
     ESP_RETURN_ON_ERROR( cla_matrix_create(3, 3, &M), TAG, "Unable to create matrix instance, M matrix creation failed" );
     ESP_RETURN_ON_ERROR( cla_vector_create(3, &b), TAG, "Unable to create vector instance, b vector creation failed" );
 
-    M->data[0][0] = v_ellip_coeffs->data[0]; M->data[0][1] = v_ellip_coeffs->data[3]; M->data[0][2] = v_ellip_coeffs->data[4]; // A, D, E
-    M->data[1][0] = v_ellip_coeffs->data[3]; M->data[1][1] = v_ellip_coeffs->data[1]; M->data[1][2] = v_ellip_coeffs->data[5]; // D, B, F
-    M->data[2][0] = v_ellip_coeffs->data[4]; M->data[2][1] = v_ellip_coeffs->data[5]; M->data[2][2] = v_ellip_coeffs->data[2]; // E, F, C
+    M->data[0][0] = v_ellip_coeffs->data[0]; M->data[0][1] = v_ellip_coeffs->data[3] / 2.0; M->data[0][2] = v_ellip_coeffs->data[4] / 2.0; // A, D, E
+    M->data[1][0] = v_ellip_coeffs->data[3] / 2.0; M->data[1][1] = v_ellip_coeffs->data[1]; M->data[1][2] = v_ellip_coeffs->data[5] / 2.0; // D, B, F
+    M->data[2][0] = v_ellip_coeffs->data[4] / 2.0; M->data[2][1] = v_ellip_coeffs->data[5] / 2.0; M->data[2][2] = v_ellip_coeffs->data[2]; // E, F, C
 
     b->data[0] = v_ellip_coeffs->data[6]; // G
     b->data[1] = v_ellip_coeffs->data[7]; // H
@@ -228,11 +228,26 @@ esp_err_t cla_get_calibration_parameters(const cla_vector_ptr_t v_ellip_coeffs, 
     ESP_GOTO_ON_ERROR(cla_matrix_multiply_vector(M_inv, b, &M_inv_b), cleanup, TAG, "Matrix-vector multiply failed");
     ESP_GOTO_ON_ERROR(cla_vector_scale(M_inv_b, -0.5, v_offset), cleanup, TAG, "Vector scaling failed");
 
-    // 3. Calculate Soft-Iron correction matrix W
-    // This step requires a matrix decomposition like Cholesky or Eigenvalue decomposition.
-    // that computes W such that W^T * W = M.
-    ESP_GOTO_ON_ERROR(cla_matrix_solve_cholesky(M, m_w), cleanup, TAG, "Cholesky decomp failed");
+    // 3. Calculate the scalar 's'
+    double s = 0;
+    cla_vector_ptr_t b_transpose_M_inv = NULL;
+    cla_matrix_ptr_t b_transpose = NULL;
+    ESP_GOTO_ON_ERROR(cla_vector_to_matrix(b, &b_transpose), cleanup, TAG, "Vector to matrix conversion failed for transpose");
+    ESP_GOTO_ON_ERROR(cla_matrix_transpose(b_transpose, &b_transpose), cleanup, TAG, "Matrix transpose failed");
+    ESP_GOTO_ON_ERROR(cla_matrix_multiply_vector(M_inv, b, &b_transpose_M_inv), cleanup, TAG, "Matrix-vector multiply for scalar 's' failed");
+    double b_dot_Minv_b = b->data[0] * b_transpose_M_inv->data[0] + b->data[1] * b_transpose_M_inv->data[1] + b->data[2] * b_transpose_M_inv->data[2];
+    // The equation is solved for ... = 1, so J = -1. s = (1/4) * b^T * M_inv * b - J
+    s = 1.0 / ((b_dot_Minv_b / 4.0) + 1.0);
 
+    // 4. Calculate Soft-Iron correction matrix W from scaled M
+    cla_matrix_ptr_t M_scaled = NULL;
+    ESP_GOTO_ON_ERROR(cla_matrix_scale(M, s, &M_scaled), cleanup, TAG, "Matrix scaling failed");
+
+    // Use Cholesky Decomposition: W = L^T
+    cla_matrix_ptr_t cholesky_l = NULL;
+
+    ESP_GOTO_ON_ERROR(cla_matrix_get_cholesky_decomposition(M_scaled, &cholesky_l), cleanup, TAG, "Cholesky decomposition failed");
+    ESP_GOTO_ON_ERROR(cla_matrix_transpose(cholesky_l, m_w), cleanup, TAG, "Failed to transpose Cholesky matrix");
 
 cleanup:
     cla_matrix_delete(M);
@@ -240,6 +255,10 @@ cleanup:
     cla_matrix_lup_delete(M_lup);
     cla_matrix_delete(M_inv);
     cla_vector_delete(M_inv_b);
+    cla_vector_delete(b_transpose_M_inv);
+    cla_matrix_delete(b_transpose);
+    cla_matrix_delete(M_scaled);
+    cla_matrix_delete(cholesky_l);
 
     return ret;
 }

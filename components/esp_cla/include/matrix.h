@@ -150,7 +150,7 @@ esp_err_t cla_matrix_create_identity(const uint16_t size, cla_matrix_ptr_t *cons
 esp_err_t cla_matrix_delete(cla_matrix_ptr_t m);
 
 /**
- * @brief Prints the matrix to the console.
+ * @brief Prints the matrix elements to the console.
  * 
  * @param m Matrix to print to the console.
  * @return esp_err_t ESP_OK on success.
@@ -382,7 +382,17 @@ esp_err_t cla_matrix_get_trace(const cla_matrix_ptr_t m, double *const trace);
  * @param m_cholesky Cholesky decomposition result matrix.
  * @return esp_err_t ESP_OK on success.
  */
-esp_err_t cla_matrix_solve_cholesky(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_cholesky);
+esp_err_t cla_matrix_get_cholesky_decomposition(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_cholesky);
+
+/**
+ * @brief Calculates the Eigen decomposition of a symmetric matrix.
+ * 
+ * @param m Matrix to decompose.
+ * @param m_eigenvectors Resulting matrix of eigenvectors.
+ * @param m_eigenvalues Resulting diagonal matrix of eigenvalues.
+ * @return esp_err_t ESP_OK on success.
+ */
+esp_err_t cla_matrix_get_eigen_decomposition(const cla_matrix_ptr_t m, cla_matrix_ptr_t *const m_eigenvectors, cla_matrix_ptr_t *const m_eigenvalues);
 
 /**
  * @brief Copies a matrix from source to destination.

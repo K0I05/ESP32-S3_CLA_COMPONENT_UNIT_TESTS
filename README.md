@@ -65,7 +65,7 @@ ESP32-S3_CLA_COMPONENT_UNIT_TESTS
 
 ## Data Generators
 
-The data generators included with the CLA component are written in `python` and generate a C header file with datasets for 10 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.
+The data generators included with the CLA component are written in `python` and generate a C header file with datasets for 5 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.
 
 The following data generators have been implemented to date:
 

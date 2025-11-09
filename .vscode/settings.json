@@ -31,6 +31,8 @@
     "array": "c",
     "string": "c",
     "string_view": "c",
-    "span": "c"
+    "span": "c",
+    "cla_matrix_ls_solve_bck_data.h": "c",
+    "memory_resource": "c"
   }
 }

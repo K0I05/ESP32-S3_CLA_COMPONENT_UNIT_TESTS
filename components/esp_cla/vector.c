@@ -81,6 +81,17 @@ esp_err_t cla_vector_delete(cla_vector_ptr_t v) {
     return ESP_OK;
 }
 
+esp_err_t cla_vector_print(cla_vector_ptr_t v) {
+    ESP_ARG_CHECK(v);
+    const char *fmt = "%.4lf\t\t";
+    printf("\n");
+    for(uint16_t i = 0; i < v->num_cmps; i++) {
+        printf(fmt, v->data[i]);
+    }
+    printf("\n");
+    return ESP_OK;
+}
+
 esp_err_t cla_vector_add(const cla_vector_ptr_t v1, const cla_vector_ptr_t v2, cla_vector_ptr_t *const v_sum) {
     ESP_ARG_CHECK(v1 && v2);
     ESP_RETURN_ON_FALSE( (v1->num_cmps == v2->num_cmps), ESP_ERR_INVALID_ARG, TAG, "Vectors must have the same dimension to perform addition" );
@@ -161,7 +172,8 @@ esp_err_t cla_vector_is_equal(const cla_vector_ptr_t v1, const cla_vector_ptr_t 
     ESP_ARG_CHECK(v1 && v2);
     ESP_RETURN_ON_FALSE( (v1->num_cmps == v2->num_cmps), ESP_ERR_INVALID_ARG, TAG, "Vectors must have the same dimension to compare equality" );
     for(uint16_t i = 0; i < v1->num_cmps; i++) {
-        if (fabs(v1->data[i] - v2->data[i]) > tolerance) {
+        const double diff = fabs(v1->data[i] - v2->data[i]);
+        if(diff > tolerance || diff > fmax(fabs(v1->data[i]), fabs(v2->data[i])) * tolerance) {
             *is_equal = false;
             return ESP_OK;
         }
