@@ -133,6 +133,16 @@ float cla_get_true_heading(const float x_axis, const float y_axis, const float d
 float cla_get_earth_field(const float x_axis, const float y_axis, const float z_axis);
 
 /**
+ * @brief Checks if two double-precision floating-point values are approximately equal within a given tolerance.
+ * 
+ * @param val1 The first value.
+ * @param val2 The second value.
+ * @param tolerance The tolerance for comparison. It's used for both absolute and relative error checks.
+ * @return bool True when values are equal to each other, otherwise, false.
+ */
+bool cla_is_value_equal(const double val1, const double val2, const double tolerance);
+
+/**
  * @brief Calculates ellipsoid coefficients from calibration sample data.
  * 
  * @param v_calib_data Calibration sample data array.

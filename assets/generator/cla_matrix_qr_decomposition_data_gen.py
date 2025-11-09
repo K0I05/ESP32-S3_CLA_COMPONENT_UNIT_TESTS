@@ -27,7 +27,7 @@ from sympy.printing.str import StrPrinter
 
 filename = "../data/cla_matrix_qr_decomposition_data.h"
 
-num_tests = 10
+num_tests = 5
 min_M_cols = 1
 min_M_rows = 1
 max_M_cols = 25

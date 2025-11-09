@@ -5,5 +5,5 @@ FILE(GLOB_RECURSE app_sources ${CMAKE_SOURCE_DIR}/src/*.*)
 
 idf_component_register(
     SRCS ${app_sources}
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include # Append component header files from CMake include directories
+    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/assets/data # Append component header files from CMake include directories
 )

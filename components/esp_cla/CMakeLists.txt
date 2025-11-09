@@ -4,5 +4,5 @@ include( $ENV{IDF_PATH}/tools/cmake/version.cmake )
 
 idf_component_register(
     SRCS "cla.c" "matrix.c" "vector.c"
-    INCLUDE_DIRS "include" "assets/data"
+    INCLUDE_DIRS "include"
 )

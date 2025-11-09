@@ -31,4 +31,130 @@ The CLA component currently supports the following features and functionality:
   * Multiply Matrix by Vector
   * Ellipsoid Coefficients
 
+```text
+ESP32-S3_CLA_COMPONENT_UNIT_TESTS
+├── assets
+|   ├── data
+|   |   └── cla_matrix_ls_solve_bck_data.h
+|   |   └── ...
+|   |   └── cla_matrix_lup_solve_data.h
+|   └── generator
+|       └── cla_matrix_ls_solve_bck_data_gen.py
+|       └── ...
+|       └── cls_matrix_lup_determinant_data_gen.py
+├── components
+│   └── esp_cla
+├── include
+├── src
+│   └── CMakeLists.txt
+│   └── main.c
+├── test
+|   ├── test_cla_matrix_ls_solve_bck
+|   |   └── test_cla_matrix_ls_solve_bck.c
+|   ├── test_cla_matrix_ls_solve_fwd
+|   |   └── test_cla_matrix_ls_solve_fwd.c
+│   └── test_cla_matrix_ls_solve
+|       └── test_cla_matrix_ls_solve.c
+└── CMakeLists.txt
+└── LICENSE
+└── platformio.ini
+└── README.md
+└── sdkconfig
+└── sdkconfig.esp32s3box
+```
+
+## Data Generators
+
+The data generators included with the CLA component are written in `python` and generate a C header file with datasets for 10 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.
+
+The following data generators have been implemented to date:
+
+* `cla_ellipsoid_fitting_data_gen.py`: Generates data to validate ellipsoid fitting calculations and algorithms.
+* `cla_matrix_ls_solve_bck_data_gen.py`: Generates data to validate upper triangular system of equations calculations and algorithms.
+* `cla_matrix_ls_solve_data_gen.py`: Generates data to validate system of equations calculations and algorithms.
+* `cla_matrix_ls_solve_fwd_data_gen.py`: Generates data to validate lower triangular system of equations calculations and algorithms.
+* `cls_matrix_lup_inverse_data_gen.py`: Generates data to validate LUP inverse calculations and algorithms.
+* `cls_matrix_lup_solve_data_gen.py`: Generates data to validate LUP solve calculations and algorithms.
+* `cls_matrix_lup_determinant_data_gen.py`: Generates data to validate LUP determinant calculations and algorithms.
+* `cls_matrix_qr_solve_data_gen.py`: Generates data to validate QR solve calculations and algorithms.
+* `cla_matrix_qr_decomposition_data_gen.py`: Generates data to validate QR decomposition calculations and algorithms.
+
+The generated data stored in the header file use a common nomenclature for variables as shown in the following example (`cla_matrix_ls_solve_data_gen.py`):
+
+```c
+static const uint8_t cla_matrix_ls_solve_cases = 10;
+
+
+static const uint16_t cla_matrix_ls_solve_a_rows[10] = {4, 7, 5, 8, 8, 14, 5, 3, 6, 5, };
+
+static const uint16_t cla_matrix_ls_solve_a_cols[10] = {4, 7, 5, 8, 8, 14, 5, 3, 6, 5, };
+
+static const double cla_matrix_ls_solve_a_mats[10][15][15] = {
+{ {89,72,67, 1},
+ {63,24,39,76},
+ {83,99,81,23},
+ {75,54,62,94},}, 
+{ {54,21,56,65,92, 1,94},
+ {49,53,32,10,87,11,85},
+ {54,63,22,75,15,66,68},
+ {39,30,31,88,13,34,14},
+ {69,79,74,43,29, 9,88},
+ {54,54,88,20,11,96,18},
+ {94,74,42,59, 7,76,99},}, 
+{ {16, 3,63,55,27},
+ {87,92,91,77,82},
+ { 6,76,60,63,83},
+ {88,74,94,23, 6},
+ {68, 4,97,22,17},}, 
+{ { 88, 2,18,90,13,29,92,56},
+ { 88,72,10,34, 3,72,19,47},
+ { 73,83,83, 6, 5,43,16,87},
+ { 64,51,70,90,31,65,22,44},
+ { 58,79,29,31, 1,61,53,57},
+ { 60,82,22,69, 7,42,79,63},
+ {100,71,32,11, 1,90,68,54},
+ { 65,95,78,72,32,88,93,12},}, 
+{ {27,50,84,92,15,79,99, 30},
+ {46,25,24,50,29,65,65,  7},
+ { 5, 5,21,11,83,22,13,100},
+ {52,34,59,17,12,15,55, 11},
+ {23,98,35,96, 3,17,42, 46},
+ {52,15,64,60,16,47,92,  6},
+ {89,30, 4,24,57,36,36, 49},
+ {84,36,82,99,41,26,94, 16},}, 
+{ {100,40,  1,57,29,83, 18,67, 9,13,60,76,74,69},
+ { 48,51, 55,63,20,19, 64,88,32,13,82,62,15,31},
+ { 26,98, 15,22,52,78, 68,93,61,20,78,70,26,58},
+ { 17,27, 13,45,83,96, 55,78,52, 4,85,47,76,32},
+ {  6,57, 60,44,76,88, 36,16,75,69,86,79,26,92},
+ { 47,76,100,89,59,35, 82,27, 4,67,79,87,35,28},
+ { 25,98, 76,84,20,37, 27,59,62,65,64,54,75,71},
+ { 61,24, 65,35,82,60, 16,31,79,61, 1,50,11,46},
+ { 47,25, 36,38,92,23, 85,28, 6,85,13,28,92,84},
+ { 35,19, 52,61,55,45,100,35,36,15,79,16,68,19},
+ { 40,45, 29,34,13,13, 21,92,15,10,50,52,50,33},
+ { 63,25, 15,75,71,26, 63,65,62,75,82,42,34, 5},
+ { 34,63, 53, 9,92,64,  2,69,85,48, 2,44,79,19},
+ { 79,41, 89,77,52, 4,  8,52, 4,20, 1,21,14,42},}, 
+{ {75,46,34,59, 7},
+ {52,60,85,84,39},
+ {58,59,61,85,47},
+ {33, 3,71,13,88},
+ {80,40,20,61,56},}, 
+{ { 9,63,98},
+ {76,12,11},
+ {61,33,25},}, 
+{ {31,38,41,90,84,40},
+ {68,12,56,82,25,44},
+ {65,65,51,20,48,36},
+ {82, 3,19, 3,83,69},
+ { 4,42,86,23,44, 7},
+ {35,13,82,46,48,27},}, 
+{ {37,35,87,90,80},
+ {53,98,90,19,63},
+ {64, 2,73,58,83},
+ { 2,85,80,12,68},
+ {80,43,58,57,86},}, };
+```
+
 Copyright (c) 2025 Eric Gionet (<gionet.c.eric@gmail.com>)

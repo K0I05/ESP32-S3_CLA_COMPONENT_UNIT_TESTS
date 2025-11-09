@@ -139,6 +139,11 @@ float cla_get_earth_field(const float x_axis, const float y_axis, const float z_
     return sqrtf(powf(x_axis, 2) + powf(y_axis, 2) + powf(z_axis, 2));
 }
 
+bool cla_is_value_equal(const double val1, const double val2, const double tolerance) {
+    const double diff = fabs(val1 - val2);
+    return diff <= tolerance || diff < fmax(fabs(val1), fabs(val2)) * tolerance;
+}
+
 esp_err_t cla_solve_ellipsoid_coefficients(const cla_vector_samples_t v_calib_data, cla_ellipsoid_coeffs_t *const v_ellip_coeffs) {
     esp_err_t ret = ESP_OK;
 

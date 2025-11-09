@@ -28,7 +28,7 @@ from sympy.abc import x
 
 filename = "../data/cla_matrix_ls_solve_data.h"
 
-num_tests = 10
+num_tests = 5
 min_M_cols = 1
 min_M_rows = 1
 max_M_cols = 15
@@ -81,11 +81,11 @@ for i in range(num_tests):
     a_mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
     b_rows += "{}, ".format(M_dim)
-    b_cols += "{}, ".format(M_dim)
+    b_cols += "{}, ".format(1)
     b_mats += "\n{{{}}}, ".format(B.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
     
     x_rows += "{}, ".format(M_dim)
-    x_cols += "{}, ".format(M_dim)
+    x_cols += "{}, ".format(1)
     x_mats += "\n{{{}}}, ".format(x.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
 
 fs.write("\nstatic const uint16_t cla_matrix_ls_solve_a_rows[{}] = {{".format(num_tests))

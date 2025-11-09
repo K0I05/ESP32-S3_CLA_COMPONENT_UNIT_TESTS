@@ -415,7 +415,8 @@ esp_err_t cla_matrix_is_equal(const cla_matrix_ptr_t m1, const cla_matrix_ptr_t 
     ESP_RETURN_ON_FALSE( (m1->num_rows == m2->num_rows && m1->num_cols == m2->num_cols), ESP_ERR_INVALID_ARG, TAG, "Invalid matrix dimensions, number of rows and columns must be equal for both matrices" );
     for(uint16_t i = 0; i < m1->num_rows; i++) {
         for(uint16_t j = 0; j < m1->num_cols; j++) {
-            if(fabs(m1->data[i][j] - m2->data[i][j]) > tolerance) {
+            const double diff = fabs(m1->data[i][j] - m2->data[i][j]);
+            if(diff > tolerance || diff > fmax(fabs(m1->data[i][j]), fabs(m2->data[i][j])) * tolerance) {
                 *is_equal = false;
                 return ESP_OK;
             }
@@ -626,10 +627,11 @@ esp_err_t cla_matrix_delete_row(const uint16_t row_idx, cla_matrix_ptr_t *const 
     cla_matrix_ptr_t m_d = NULL;
     ESP_RETURN_ON_ERROR( cla_matrix_create((*m)->num_rows - 1, (*m)->num_cols, &m_d), TAG, "Unable to create matrix instance, delete row from matrix failed" );
     for(uint16_t i = 0, k = 0; i < (*m)->num_rows; i++) {
-        for(uint16_t j = 0; j < (*m)->num_cols; j++) {
-            if(row_idx != i) {
-                m_d->data[k++][j] = (*m)->data[i][j];
+        if(row_idx != i) {
+            for(uint16_t j = 0; j < (*m)->num_cols; j++) {
+                m_d->data[k][j] = (*m)->data[i][j];
             }
+            k++;
         }
     }
     cla_matrix_delete(*m);
@@ -651,7 +653,7 @@ esp_err_t cla_matrix_swap_rows(const uint16_t row_idx1, const uint16_t row_idx2,
     ESP_ARG_CHECK(m);
     ESP_RETURN_ON_FALSE( (row_idx1 < (*m)->num_rows && row_idx2 < (*m)->num_rows), ESP_ERR_INVALID_ARG, TAG, "Invalid row index, row index must be lower than the number of rows" );
     for(uint16_t i = 0; i < (*m)->num_cols; i++) {
-        double temp  = (*m)->data[row_idx1][i];
+        const double temp  = (*m)->data[row_idx1][i];
         (*m)->data[row_idx1][i] = (*m)->data[row_idx2][i];
         (*m)->data[row_idx2][i] = temp;
     }

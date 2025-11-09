@@ -56,7 +56,7 @@
 
 #define CONFIG_APP_TAG                          "CLA [APP]"
 
-#define CLA_TEST_TOLERANCE                      (0.0001f)
+#define CLA_TEST_TOLERANCE                      (0.0001)
 
 // macros
 #define CONFIG_I2C_0_MASTER_DEFAULT {                               \
@@ -133,6 +133,14 @@ static inline void cla_matrix_ls_solve_fwd_test(void) {
         ESP_LOGI(CONFIG_APP_TAG, "Computed X:");
         cla_matrix_print(x_computed);
 
+        bool is_equal = false;
+        cla_matrix_is_equal(x_computed, x_expected, CLA_TEST_TOLERANCE, &is_equal);
+        if(is_equal) {
+            ESP_LOGI(CONFIG_APP_TAG, "Computed X is equal to Expected X");
+        } else {
+            ESP_LOGW(CONFIG_APP_TAG, "Computed X is NOT equal to Expected X");
+        }
+
         // free matrices
         cla_matrix_delete(a);
         cla_matrix_delete(b);
@@ -195,6 +203,14 @@ static inline void cla_matrix_ls_solve_bck_test(void) {
         cla_matrix_print(x_expected);
         ESP_LOGI(CONFIG_APP_TAG, "Computed X:");
         cla_matrix_print(x_computed);
+
+        bool is_equal = false;
+        cla_matrix_is_equal(x_computed, x_expected, CLA_TEST_TOLERANCE, &is_equal);
+        if(is_equal) {
+            ESP_LOGI(CONFIG_APP_TAG, "Computed X is equal to Expected X");
+        } else {
+            ESP_LOGW(CONFIG_APP_TAG, "Computed X is NOT equal to Expected X");
+        }
 
         // free matrices
         cla_matrix_delete(a);
@@ -262,6 +278,14 @@ static inline void cla_matrix_ls_solve_test(void) {
         cla_matrix_print(x_expected);
         ESP_LOGI(CONFIG_APP_TAG, "Computed X:");
         cla_matrix_print(x_computed);
+
+        bool is_equal = false;
+        cla_matrix_is_equal(x_computed, x_expected, CLA_TEST_TOLERANCE, &is_equal);
+        if(is_equal) {
+            ESP_LOGI(CONFIG_APP_TAG, "Computed X is equal to Expected X");
+        } else {
+            ESP_LOGW(CONFIG_APP_TAG, "Computed X is NOT equal to Expected X");
+        }
 
         // free matrices
         cla_matrix_delete(a);
@@ -671,11 +695,11 @@ static void i2c_0_task( void *pvParameters ) {
         //cla_matrix_lup_inverse_test();
         //cla_matrix_lup_solve_test();
         //cla_matrix_row_echelon_form_test();
-        cla_matrix_reduced_row_echelon_form_test();
-        //cla_matrix_ls_solve_fwd_test();
-        //cla_matrix_ls_solve_bck_test();
-        //cla_matrix_ls_solve_test();
-        cla_ellipsoid_fitting_test();
+        //cla_matrix_reduced_row_echelon_form_test();
+        cla_matrix_ls_solve_fwd_test();
+        cla_matrix_ls_solve_bck_test();
+        cla_matrix_ls_solve_test();
+        //cla_ellipsoid_fitting_test();
         //
         //ESP_LOGI(CONFIG_APP_TAG, "######################## CLA - END ###########################");
         //

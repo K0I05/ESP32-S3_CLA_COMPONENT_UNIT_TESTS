@@ -40,14 +40,13 @@ The CLA component is still under development and it is an experimental project f
 * [Repository](#repository)
 * [General Usage](#general-usage)
 * [Basic Example](#basic-example)
-* [Data Generators](#data-generators)
 * [References](#references)
 
 ## Repository
 
-The CLA component is hosted on github and is located here: <https://github.com/K0I05/ESP32-S3_ESP-IDF_COMPONENTS/tree/main/components/utilities/esp_cla>
+The CLA component is hosted on github and is located here: <https://github.com/K0I05/ESP32-S3_ESP-IDF_COMPONENTS/components/utilities/esp_cla>
 
-The CLA component has an associated project `Compact Linear Algabra Component Unit Tests` that has various test cases and examples.  This project is used to test and validate CLA component operations, calculations, and functionality.
+The CLA component has an associated project [Compact Linear Algabra Component Unit Tests](<https://github.com/K0I05/ESP32-S3_CLA_COMPONENT_UNIT_TESTS>) that has various test cases and examples.  This project is used to test and validate CLA component operations, calculations, and functionality.
 
 ## General Usage
 
@@ -61,15 +60,6 @@ components
     └── LICENSE
     └── idf_component.yml
     └── library.json
-    ├── assets
-    |   ├── data
-    |   |   └── cla_matrix_ls_solve_bck_data.h
-    |   |   └── ...
-    |   |   └── cla_matrix_lup_solve_data.h
-    |   └── generator
-    |       └── cla_matrix_ls_solve_bck_data_gen.py
-    |       └── ...
-    |       └── cls_matrix_lup_determinant_data_gen.py
     ├── include
     │   └── cla_version.h
     │   └── cla.h
@@ -88,84 +78,6 @@ Once the component is referenced as a single include and project is built, funct
 #include <cla.h>
 
 ```
-
-## Data Generators
-
-The data generators included with the CLA component are written in `python` and generate a C header file with datasets for 10 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.
-
-The following data generators have been implemented to date:
-
-* `cla_ellipsoid_fitting_data_gen.py`: Generates data to validate ellipsoid fitting calculations and algorithms.
-* `cla_matrix_ls_solve_bck_data_gen.py`: Generates data to validate upper triangular system of equations calculations and algorithms.
-* `cla_matrix_ls_solve_data_gen.py`: Generates data to validate system of equations calculations and algorithms.
-* `cla_matrix_ls_solve_fwd_data_gen.py`: Generates data to validate lower triangular system of equations calculations and algorithms.
-* `cls_matrix_lup_inverse_data_gen.py`: Generates data to validate LUP inverse calculations and algorithms.
-* `cls_matrix_lup_solve_data_gen.py`: Generates data to validate LUP solve calculations and algorithms.
-* `cls_matrix_lup_determinant_data_gen.py`: Generates data to validate LUP determinant calculations and algorithms.
-* `cls_matrix_qr_solve_data_gen.py`: Generates data to validate QR solve calculations and algorithms.
-* `cla_matrix_qr_decomposition_data_gen.py`: Generates data to validate QR decomposition calculations and algorithms.
-
-The generated data stored in the header file use a common nomenclature for variables as shown in the following example (`cla_matrix_ls_solve_data_gen.py`):
-
-```c
-static const uint8_t cla_matrix_ls_solve_cases = 10;
-
-static const uint16_t cla_matrix_ls_solve_a_0_rows = 12;
-
-static const uint16_t cla_matrix_ls_solve_a_0_cols = 12;
-
-static const double cla_matrix_ls_solve_a_0_matrix[12][12] = {
-    {29,85,97,93, 52,14,80,73,29, 7,93,36},
-    {42,30,40,60,  4,10,49,70,63,34,96,57},
-    {11,38,10,22, 21,71,72,16,90,67,91,19},
-    { 7,81,45,22, 12,71, 8,22,40,67, 1,70},
-    {73,80,72, 6, 61,22,85,78,22,20,93,25},
-    {55,74,40,18, 80,27,66,54,49,43,40,88},
-    {83,77,31,96, 92,86, 2,56,17,14,23,49},
-    {17,76,64,56, 12,20,28,93,16,30,88,26},
-    {56,15,56,39,100, 2,85,47,92,80, 5,55},
-    {14,16,97, 2, 17,83,68,19,77,66,32,16},
-    {32,28,75,28, 10,60, 6,24,99,23,24,20},
-    {42,39,77,85, 89,15,49,36,21,11,69,51},};
-
-static const uint16_t cla_matrix_ls_solve_b_0_rows = 12;
-
-static const uint16_t cla_matrix_ls_solve_b_0_cols = 1;
-
-static const double cla_matrix_ls_solve_b_0_matrix[12][1] = {
-    {81},
-    {52},
-    {72},
-    {92},
-    {49},
-    {52},
-    {68},
-    {64},
-    {56},
-    {40},
-    {97},
-    {83},};
-
-static const uint16_t cla_matrix_ls_solve_x_0_rows = 12;
-
-static const uint16_t cla_matrix_ls_solve_x_0_cols = 1;
-
-static const double cla_matrix_ls_solve_x_0_matrix[12][1] = {
-    { 0.407464755974334},
-    {  1.04876039925911},
-    { 0.512350229929316},
-    { 0.303932707888855},
-    { 0.147364422912018},
-    {-0.661738724969443},
-    {-0.933462295455920},
-    { -1.16545315664135},
-    { 0.549277483419916},
-    { 0.749125178148169},
-    { 0.564709410233412},
-    {-0.284979671821370},};
-```
-
-Please reference the `Compact Linear Algabra Component Unit Tests` project for more information on usage and examples.
 
 ## References
 

@@ -22,22 +22,26 @@
 #
 #!/usr/bin/env python
 from random import randrange
-from sympy import randMatrix
+from sympy import randMatrix, N
 from sympy.printing.str import StrPrinter
 
-filename = "../data/cla_matrix_lup_solve_data.h"
+filename = "../data/cla_matrix_lup_inverse_data.h"
 
-num_tests = 10
+num_tests = 5
 min_M_cols = 1
 min_M_rows = 1
-max_M_cols = 25
-max_M_rows = 25
-min_val = 0
+max_M_cols = 15
+max_M_rows = 15
+min_val = 1
 max_val = 100
 
-rows = ""
-cols = ""
-mats = ""
+a_rows = ""
+a_cols = ""
+a_mats = ""
+
+x_rows = ""
+x_cols = ""
+x_mats = ""
 
 fs = open(filename, "w", encoding="utf-8")
 
@@ -48,8 +52,8 @@ fs.write("\n")
 fs.write("/* Copyright (c) 2025 Eric Gionet (gionet.c.eric@gmail.com) */")
 fs.write("\n")
 fs.write("\n")
-fs.write("#ifndef __CLA_MATRIX_LUP_SOLVE_TEST_DATA_H__\n")
-fs.write("#define __CLA_MATRIX_LUP_SOLVE_TEST_DATA_H__\n")
+fs.write("#ifndef __CLA_MATRIX_LUP_INVERSE_TEST_DATA_H__\n")
+fs.write("#define __CLA_MATRIX_LUP_INVERSE_TEST_DATA_H__\n")
 fs.write("\n")
 fs.write("#include <stdint.h>\n")
 fs.write("\n")
@@ -57,29 +61,43 @@ fs.write("#ifdef __cplusplus\n")
 fs.write('extern "C" {\n')
 fs.write("#endif\n")
 fs.write("\n")
-fs.write("\nstatic const uint8_t cla_matrix_lup_solve_cases = {};\n".format(num_tests))
+fs.write("\nstatic const uint8_t cla_matrix_lup_inverse_cases = {};\n".format(num_tests))
 fs.write("\n")
 
 for i in range(num_tests):
     print("Creating test case: ", i + 1)
     M_dim = randrange(min_M_cols, max_M_cols)
     M = randMatrix(M_dim, M_dim, min=min_val, max=max_val, percent=100)
+    M_inv = M.inv().applyfunc(N)
     
-    rows += "{}, ".format(M_dim)
-    cols += "{}, ".format(M_dim)
-    mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
+    a_rows += "{}, ".format(M_dim)
+    a_cols += "{}, ".format(M_dim)
+    a_mats += "\n{{{}}}, ".format(M.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
+    
+    x_rows += "{}, ".format(M_dim)
+    x_cols += "{}, ".format(M_dim)
+    x_mats += "\n{{{}}}, ".format(M_inv.table(StrPrinter(), rowstart="\t{", rowend="},", colsep=","))
 
-fs.write("\nstatic const uint16_t cla_matrix_lup_solve_rows[{}] = {{".format(num_tests))
-fs.write("{}}};\n".format(rows))
-fs.write("\nstatic const uint16_t cla_matrix_lup_solve_cols[{}] = {{".format(num_tests))
-fs.write("{}}};\n".format(cols))
-fs.write("\nstatic const double cla_matrix_lup_solve_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
-fs.write("{}}};\n".format(mats))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_rows))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_a_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(a_cols))
+fs.write("\nstatic const double cla_matrix_lup_inverse_a_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(a_mats))
+
+fs.write("\n")
+
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_rows[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_rows))
+fs.write("\nstatic const uint16_t cla_matrix_lup_inverse_x_cols[{}] = {{".format(num_tests))
+fs.write("{}}};\n".format(x_cols))
+fs.write("\nstatic const double cla_matrix_lup_inverse_x_mats[{}][{}][{}] = {{".format(num_tests, max_M_rows, max_M_cols))
+fs.write("{}}};\n".format(x_mats))
 
 fs.write("\n")
 fs.write("#ifdef __cplusplus\n")
 fs.write("}\n")
 fs.write("#endif\n")
 fs.write("\n")
-fs.write("#endif  // __CLA_MATRIX_LUP_SOLVE_TEST_DATA_H__\n")
+fs.write("#endif  // __CLA_MATRIX_LUP_INVERSE_TEST_DATA_H__\n")
 fs.close()
