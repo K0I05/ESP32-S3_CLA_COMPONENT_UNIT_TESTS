@@ -152,7 +152,7 @@ bool cla_is_value_equal(const double val1, const double val2, const double toler
 esp_err_t cla_solve_ellipsoid_coefficients(const cla_vector_samples_t v_calib_data, cla_ellipsoid_coeffs_t *const v_ellip_coeffs);
 
 /**
- * @brief Derives calibration parameters from ellipsoid coefficients.
+ * @brief Derives hard and soft-iron calibration parameters from ellipsoid coefficients.
  *
  * @param v_ellip_coeffs Input vector of 9 ellipsoid coefficients.
  * @param v_offset       Output hard-iron offset vector (3x1).
@@ -162,7 +162,7 @@ esp_err_t cla_solve_ellipsoid_coefficients(const cla_vector_samples_t v_calib_da
 esp_err_t cla_get_calibration_parameters(const cla_vector_ptr_t v_ellip_coeffs, cla_vector_ptr_t *const v_offset, cla_matrix_ptr_t *const m_w);
 
 /**
- * @brief Applies calibration to raw vector sensor data.
+ * @brief Applies hard and soft-iron calibration parameters to raw vector sensor data.
  *
  * @param v_raw_data Input raw sensor data vector (3x1).
  * @param v_offset   Hard-iron offset vector (3x1).
