@@ -1,8 +1,8 @@
 /**
  * @file main.c
- * @brief explain
+ * @brief Program to test CLA component functionality.  See 
+ * test cases in the 'test' folder.
  *
- * This example takes the parameters 
  *
  * board: (1) ESP32-S3-­WROOM­-1-N16R8 (esp32s3box)
  * 
@@ -32,7 +32,10 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+/* esp-cla component */
 #include <cla.h>
+
+/* test data from the 'assets/data' directory */
 #include <cla_matrix_ls_solve_fwd_data.h>
 #include <cla_matrix_ls_solve_bck_data.h>
 #include <cla_matrix_ls_solve_data.h>

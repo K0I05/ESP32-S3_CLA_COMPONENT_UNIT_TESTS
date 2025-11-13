@@ -9,7 +9,7 @@
 [![PlatformIO CI](https://github.com/K0I05/ESP32-S3_CLA_COMPONENT_UNIT_TESTS/actions/workflows/pio_build.yml/badge.svg)](https://github.com/K0I05/ESP32-S3_CLA_COMPONENT_UNIT_TESTS/actions/workflows/pio_build.yml)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/K0I05/ESP32-S3_CLA_COMPONENT_UNIT_TESTS/graphs/commit-activity)
 
-This repository is a collection of examples and unit tests for the compact linear algebra (CLA) component that is optimized and compatible with the ESP32 espressif IoT development framework (esp-idf).  The development environment is under Visual Studio Code with the PlatformIO (6.1.18) and ESP-IDF (v5.5.1) extensions.  The CLA test cases, matrix features and functionality was inspired by the [Neat Matrix Library (NML)](https://github.com/nomemory/neat-matrix-library) written in standard C.  There is an official digital signal processing library ([ESP-DSP](https://github.com/espressif/esp-dsp)) by expressif system.  However, the codebase is a mixure of C/C++ which was a key driver behind developing the CLA component in C.
+This repository is a collection of examples and unit tests for the compact linear algebra (CLA) component that is optimized and compatible with the ESP32 espressif IoT development framework (esp-idf).  The development environment is under Visual Studio Code with the PlatformIO (6.1.18) and ESP-IDF (v5.5.1) extensions.  The CLA test cases, matrix features and functionality was inspired by the [Neat Matrix Library (NML)](https://github.com/nomemory/neat-matrix-library) written in standard C.  There is an official digital signal processing library ([ESP-DSP](https://github.com/espressif/esp-dsp)) by expressif system.  However, the codebase is a mixure of C/C++ which was a key driver behind developing the CLA component in native C.
 
 The CLA component currently supports the following features and functionality:
 
@@ -49,12 +49,14 @@ ESP32-S3_CLA_COMPONENT_UNIT_TESTS
 │   └── CMakeLists.txt
 │   └── main.c
 ├── test
-|   ├── test_cla_matrix_ls_solve_bck
-|   |   └── test_cla_matrix_ls_solve_bck.c
-|   ├── test_cla_matrix_ls_solve_fwd
-|   |   └── test_cla_matrix_ls_solve_fwd.c
-│   └── test_cla_matrix_ls_solve
-|       └── test_cla_matrix_ls_solve.c
+|   ├── test_cla_ellipsoid
+|   |   └── test_cla_ellipsoid.c
+|   ├── test_cla_matrix
+|   |   └── test_cla_matrix.c
+|   ├── test_cla_matrix_ls
+|   |   └── test_cla_matrix_ls.c
+│   └── test_cla_matrix_lup
+|       └── test_cla_matrix_lup.c
 └── CMakeLists.txt
 └── LICENSE
 └── platformio.ini
@@ -65,10 +67,11 @@ ESP32-S3_CLA_COMPONENT_UNIT_TESTS
 
 ## Data Generators
 
-The data generators included with the CLA component are written in `python` and generate a C header file with datasets for 5 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.
+The data generators included with the CLA component unit tests are written in `python` and generate a C header file with datasets for up to 5 test cases by default.  The generated header file is stored in the `assets\data` folder by default, data in the datasets is generated randomly, and updated every time the data generator is executed.  The header file generated from a data generator should not be modified, otherwise, changes will get overwritten when the data generator is executed again.
 
 The following data generators have been implemented to date:
 
+* `cla_ellipsoid_calibration_data_gen.py`: Generates data to validate ellipsoid calibration calculations and algorithms.
 * `cla_ellipsoid_fitting_data_gen.py`: Generates data to validate ellipsoid fitting calculations and algorithms.
 * `cla_matrix_ls_solve_bck_data_gen.py`: Generates data to validate upper triangular system of equations calculations and algorithms.
 * `cla_matrix_ls_solve_data_gen.py`: Generates data to validate system of equations calculations and algorithms.
@@ -78,6 +81,8 @@ The following data generators have been implemented to date:
 * `cls_matrix_lup_determinant_data_gen.py`: Generates data to validate LUP determinant calculations and algorithms.
 * `cls_matrix_qr_solve_data_gen.py`: Generates data to validate QR solve calculations and algorithms.
 * `cla_matrix_qr_decomposition_data_gen.py`: Generates data to validate QR decomposition calculations and algorithms.
+* `cla_matrix_ref_data_gen.py`: Generates data to validate matrix row echelon form calculations and algorithms.
+* `cla_matrix_rref_data_gen.py`: Generates data to validate matrix reduced row echelon form calculations and algorithms.
 
 The generated data stored in the header file use a common nomenclature for variables as shown in the following example (`cla_matrix_ls_solve_data_gen.py`):
 
@@ -132,7 +137,16 @@ static const double cla_matrix_ls_solve_x_mats[5][15][15] = {
 
 ## Test Cases
 
-A verbose test command example is shown below (`platformio.exe test -vvv --environment esp32s3box`):
+The following test cases have been implemented to date:
+
+* `test_cla_ellipsoid.c`: Tests solving ellipsoid coefficients and soft and hard-iron calibration parameters.
+* `test_cla_matrix.c`: Tests matrix QR decomposition, reduced row echelon form, and row echelon form calculations.
+* `test_cla_matrix_ls.c`: Tests matrix system of equations for solving an equation, upper and lower triangle calculations.
+* `test_cla_matrix_lup.c`: Tests matrix LUP decomposition, inverse, and determinant calculations.
+
+The test cases reference test data header files generated from the `python` data generators and compare computed versus expected results.  Please review individual test files for details on test cases implemented to date by test group i.e. ellipsoid, matrix, matrix linear system (LS), matrix LUP, and vector.
+
+A verbose test command example with test results is shown below (`platformio.exe test -vvv --environment esp32s3box`):
 
 ```text
 ================================================================================================== SUMMARY ================================================================================================== 
@@ -144,5 +158,7 @@ esp32s3box     test_cla_matrix_ls   PASSED    00:00:23.530
 esp32s3box     test_cla_matrix_lup  PASSED    00:00:23.623
 ================================================================================ 11 test cases: 11 succeeded in 00:01:38.828 ================================================================================ 
 ```
+
+The above test results show that a total of 11 test cases were executed and succeeded.  Additional documentation on performing unit tests in Viual Studio Code with PlatformIO extension can be found in the PlatformIO documentation, [Unit Testing](<https://docs.platformio.org/en/latest/advanced/unit-testing/index.html>).
 
 Copyright (c) 2025 Eric Gionet (<gionet.c.eric@gmail.com>)

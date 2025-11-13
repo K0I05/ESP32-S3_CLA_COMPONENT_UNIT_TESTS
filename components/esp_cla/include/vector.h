@@ -27,6 +27,9 @@
  * @{
  *
  * ESP-IDF compact linear algebra (cla) vector library
+ * 
+ * examples
+ * https://github.com/goldsborough/vector
  *
  * Copyright (c) 2025 Eric Gionet (gionet.c.eric@gmail.com)
  *
