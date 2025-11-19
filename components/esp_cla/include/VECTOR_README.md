@@ -1,5 +1,4 @@
-
-# Unit Tests for Compact Linear Algebra (CLA) Component
+# ESP CLA — Vector Library
 
 [![K0I05](https://img.shields.io/badge/K0I05-a9a9a9?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODgiIGhlaWdodD0iMTg3Ij48cGF0aCBmaWxsPSIjNDU0QjU0IiBkPSJNMTU1LjU1NSAyMS45M2MxOS4yNzMgMTUuOTggMjkuNDcyIDM5LjM0NSAzMi4xNjggNjMuNzg5IDEuOTM3IDIyLjkxOC00LjU1MyA0Ni42Ni0xOC44NDggNjQuNzgxQTUwOS40NzggNTA5LjQ3OCAwIDAgMSAxNjUgMTU1bC0xLjQ4NCAxLjg4M2MtMTMuMTk2IDE2LjUzMS0zNS41NTUgMjcuMjE1LTU2LjMzOSAyOS45MDItMjguMzEyIDIuOC01Mi4yNTUtNC43MzctNzQuNzMyLTIxLjcxNUMxMy4xNzIgMTQ5LjA5IDIuOTczIDEyNS43MjUuMjc3IDEwMS4yODEtMS42NiA3OC4zNjMgNC44MyA1NC42MjEgMTkuMTI1IDM2LjVBNTA5LjQ3OCA1MDkuNDc4IDAgMCAxIDIzIDMybDEuNDg0LTEuODgzQzM3LjY4IDEzLjU4NiA2MC4wNCAyLjkwMiA4MC44MjMuMjE1YzI4LjMxMi0yLjggNTIuMjU1IDQuNzM3IDc0LjczMiAyMS43MTVaIi8+PHBhdGggZmlsbD0iI0ZERkRGRCIgZD0iTTExOS44NjcgNDUuMjdDMTI4LjkzMiA1Mi4yNiAxMzMuODIgNjMgMTM2IDc0Yy42MyA0Ljk3Mi44NDIgOS45NTMuOTUzIDE0Ljk2LjA0NCAxLjkxMS4xMjIgMy44MjIuMjAzIDUuNzMxLjM0IDEyLjIxLjM0IDEyLjIxLTMuMTU2IDE3LjMwOWE5NS42MDQgOTUuNjA0IDAgMCAxLTQuMTg4IDMuNjI1Yy00LjUgMy43MTctNi45NzQgNy42ODgtOS43MTcgMTIuODAzQzEwNi45NCAxNTIuNzkyIDEwNi45NCAxNTIuNzkyIDk3IDE1N2MtMy40MjMuNTkyLTUuODAxLjY4NS04Ljg3OS0xLjA3NC05LjgyNi03Ljg4LTE2LjAzNi0xOS41OS0yMS44NTgtMzAuNTEyLTIuNTM0LTQuNTc1LTUuMDA2LTcuMjEtOS40NjYtMTAuMDItMy43MTQtMi44ODItNS40NS02Ljk4Ni02Ljc5Ny0xMS4zOTQtLjU1LTQuODg5LS41NjEtOS4zMTYgMS0xNCAuMDkzLTEuNzYzLjE4Mi0zLjUyNy4yMzktNS4yOTIuNDkxLTEzLjg4NCAzLjg2Ni0yNy4wNTcgMTQuMTU2LTM3LjAyOCAxNy4yMTgtMTQuMzM2IDM1Ljg1OC0xNS4wNjYgNTQuNDcyLTIuNDFaIi8+PHBhdGggZmlsbD0iI0M2RDVFMCIgZD0iTTEwOSAzOWMxMS43MDMgNS4yNTUgMTkuMjA2IDEzLjE4NiAyNC4yOTMgMjUuMDA0IDIuODU3IDguMjQgMy40NyAxNi4zMTYgMy42NiAyNC45NTYuMDQ0IDEuOTExLjEyMiAzLjgyMi4yMDMgNS43MzEuMzQgMTIuMjEuMzQgMTIuMjEtMy4xNTYgMTcuMzA5YTk1LjYwNCA5NS42MDQgMCAwIDEtNC4xODggMy42MjVjLTQuNSAzLjcxNy02Ljk3NCA3LjY4OC05LjcxNyAxMi44MDNDMTA2LjgwNCAxNTMuMDQxIDEwNi44MDQgMTUzLjA0MSA5NyAxNTdjLTIuMzMyLjA3OC00LjY2OC4wOS03IDBsMi4xMjUtMS44NzVjNS40My01LjQ0NSA4Ljc0NC0xMi41NzcgMTEuNzU0LTE5LjU1OWEzNDkuNzc1IDM0OS43NzUgMCAwIDEgNC40OTYtOS44NzlsMS42NDgtMy41NWMyLjI0LTMuNTU1IDQuNDEtNC45OTYgNy45NzctNy4xMzcgMi4zMjMtMi42MSAyLjMyMy0yLjYxIDQtNWwtMyAxYy0yLjY4LjE0OC01LjMxOS4yMy04IC4yNWwtMi4xOTUuMDYzYy01LjI4Ny4wMzktNS4yODcuMDM5LTcuNzc4LTEuNjUzLTEuNjY2LTIuNjkyLTEuNDUzLTQuNTYtMS4wMjctNy42NiAyLjM5NS00LjM2MiA0LjkyNC04LjA0IDkuODI4LTkuNTcgMi4zNjQtLjQ2OCA0LjUxNC0uNTI4IDYuOTIyLS40OTNsMi40MjIuMDI4TDEyMSA5MmwtMS0yYTkyLjc1OCA5Mi43NTggMCAwIDEtLjM2LTQuNTg2QzExOC42IDY5LjYzMiAxMTYuNTE3IDU2LjA5NCAxMDQgNDVjLTUuOTA0LTQuNjY0LTExLjYtNi4wODgtMTktNyA3LjU5NC00LjI2NCAxNi4yMjMtMS44MSAyNCAxWiIvPjxwYXRoIGZpbGw9IiM0OTUwNTgiIGQ9Ik03NyA5MmM0LjYxMyAxLjY3MSA3LjI2IDMuOTQ1IDEwLjA2MyA3LjkzOCAxLjA3OCAzLjUyMy45NzYgNS41NDYtLjA2MyA5LjA2Mi0yLjk4NCAyLjk4NC02LjI1NiAyLjM2OC0xMC4yNSAyLjM3NWwtMi4yNzcuMDc0Yy01LjI5OC4wMjgtOC4yNTQtLjk4My0xMi40NzMtNC40NDktMi44MjYtMy41OTctMi40MTYtNy42MzQtMi0xMiA0LjUwMi00LjcyOCAxMC45OS0zLjc2IDE3LTNaIi8+PHBhdGggZmlsbD0iIzQ4NEY1NyIgZD0ibTExOCA5MS43NSAzLjEyNS0uMDc4YzMuMjU0LjM3MSA0LjU5NyAxLjAwMiA2Ljg3NSAzLjMyOC42MzkgNC4yMzEuMjkgNi40NDItMS42ODggMTAuMjUtMy40MjggNC4wNzgtNS44MjcgNS41OTgtMTEuMTk1IDYuMTQ4LTEuNDE0LjAwOC0yLjgyOCAwLTQuMjQyLS4wMjNsLTIuMTY4LjAzNWMtMi45OTgtLjAxNy01LjE1Ny0uMDMzLTcuNjcyLTEuNzU4LTEuNjgxLTIuNjg0LTEuNDYtNC41NTItMS4wMzUtNy42NTIgMi4zNzUtNC4zMjUgNC44OTQtOC4wMDkgOS43NS05LjU1OSAyLjc3Ny0uNTQ0IDUuNDItLjY0OSA4LjI1LS42OTFaIi8+PHBhdGggZmlsbD0iIzUyNTg2MCIgZD0iTTg2IDEzNGgxNmwxIDRjLTIgMi0yIDItNS4xODggMi4yNjZMOTQgMTQwLjI1bC0zLjgxMy4wMTZDODcgMTQwIDg3IDE0MCA4NSAxMzhsMS00WiIvPjwvc3ZnPg==)](https://github.com/K0I05)
 [![License: MIT](https://cdn.prod.website-files.com/5e0f1144930a8bc8aace526c/65dd9eb5aaca434fac4f1c34_License-MIT-blue.svg)](/LICENSE)
@@ -7,97 +6,135 @@
 [![Framework](https://img.shields.io/badge/Framework-ESP_IDF-red?logo=espressif)](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/index.html)
 [![Edited with VS Code](https://img.shields.io/badge/Edited_with-VS_Code-007ACC?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSI1MCIgeTE9IjAiIHgyPSI1MCIgeTI9IjEwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iMCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxwYXRoIGZpbGw9IiMwMDY1QTkiIGQ9Ik05Ni40NiAxMC44IDc1Ljg2Ljg4QzczLjQ3LS4yNyA3MC42Mi4yMSA2OC43NSAyLjA4TDEuMyA2My41OGMtMS44MiAxLjY1LTEuODIgNC41MSAwIDYuMTZsNS41MSA1LjAxYzEuNDkgMS4zNSAzLjcyIDEuNDUgNS4zMi4yNGw4MS4yMy02MS42MmMyLjcyLTIuMDcgNi42NC0uMTMgNi42NCAzLjI5di0uMjRjMC0yLjQtMS4zOC00LjU5LTMuNTQtNS42M1oiLz48cGF0aCBmaWxsPSIjMDA3QUNDIiBkPSJNOTYuNDYgODkuMiA3NS44NiA5OS4xMmMtMi4zOSAxLjE1LTUuMjQuNjYtNy4xMS0xLjJMMS4zIDM2LjQyYy0xLjgyLTEuNjUtMS44Mi00LjUxIDAtNi4xN2w1LjUxLTUuMDFjMS40OS0xLjM1IDMuNzItMS40NSA1LjMyLS4yM2w4MS4yMyA2MS42MmMyLjcyIDIuMDcgNi42NC4xMyA2LjY0LTMuM3YuMjRjMCAyLjQtMS4zOCA0LjU5LTMuNTQgNS42M1oiLz48cGF0aCBmaWxsPSIjMUY5Q0YwIiBkPSJNNzUuODYgOTkuMTNjLTIuMzkgMS4xNS01LjI0LjY2LTcuMTEtMS4yMSAyLjMxIDIuMzEgNi4yNS42NiA2LjI1LTIuNlY0LjY3YzAtMy4yNi0zLjk0LTQuODktNi4yNS0yLjU4IDEuODctMS44NyA0LjcyLTIuMzYgNy4xMS0xLjIxbDIwLjYgOS45MWMyLjE2IDEuMDQgMy41NCAzLjIzIDMuNTQgNS42M3Y2Ny4xN2MwIDIuNC0xLjM4IDQuNTktMy41NCA1LjYzbC0yMC42IDkuOTFaIi8+PHBhdGggZmlsbD0idXJsKCNhKSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNzAuODUgOTkuMzJjMS41OC42MSAzLjM3LjU3IDQuOTYtLjE5bDIwLjU5LTkuOTFjMi4xNi0xLjA0IDMuNTQtMy4yMyAzLjU0LTUuNjNWMTYuNDFjMC0yLjQtMS4zOC00LjU5LTMuNTQtNS42M0w3NS44MS44N2MtMi4wOS0xLTQuNTMtLjc2LTYuMzYuNTgtLjI2LjE5LS41MS40LS43NC42NEwyOS4yOSAzOC4wNGwtMTcuMTctMTMuMDNjLTEuNi0xLjIxLTMuODMtMS4xMS01LjMyLjI0bC01LjUgNS4wMWMtMS44MiAxLjY1LTEuODIgNC41MSAwIDYuMTZMMTYuMTkgNTAgMS4zIDYzLjU4Yy0xLjgyIDEuNjUtMS44MiA0LjUxIDAgNi4xN2w1LjUxIDUuMDFjMS40OSAxLjM1IDMuNzIgMS40NSA1LjMyLjIzbDE3LjE3LTEzLjAzIDM5LjQxIDM1Ljk2Yy42Mi42MiAxLjM2IDEuMDkgMi4xNCAxLjRaTTc0Ljk1IDI3LjMgNDUuMDUgNTBsMjkuOSAyMi43VjI3LjNaIiBvcGFjaXR5PSIuMjUiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTpvdmVybGF5Ii8+PC9zdmc+&logoColor=white)](https://code.visualstudio.com/)
 [![Build with PlatformIO](https://img.shields.io/badge/build%20with-PlatformIO-orange?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMjUwMCIgaGVpZ2h0PSIyNTAwIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTEyOCAwQzkzLjgxIDAgNjEuNjY2IDEzLjMxNCAzNy40OSAzNy40OSAxMy4zMTQgNjEuNjY2IDAgOTMuODEgMCAxMjhjMCAzNC4xOSAxMy4zMTQgNjYuMzM0IDM3LjQ5IDkwLjUxQzYxLjY2NiAyNDIuNjg2IDkzLjgxIDI1NiAxMjggMjU2YzM0LjE5IDAgNjYuMzM0LTEzLjMxNCA5MC41MS0zNy40OUMyNDIuNjg2IDE5NC4zMzQgMjU2IDE2Mi4xOSAyNTYgMTI4YzAtMzQuMTktMTMuMzE0LTY2LjMzNC0zNy40OS05MC41MUMxOTQuMzM0IDEzLjMxNCAxNjIuMTkgMCAxMjggMCIgZmlsbD0iI0ZGN0YwMCIvPjxwYXRoIGQ9Ik0yNDkuMzg2IDEyOGMwIDY3LjA0LTU0LjM0NyAxMjEuMzg2LTEyMS4zODYgMTIxLjM4NkM2MC45NiAyNDkuMzg2IDYuNjEzIDE5NS4wNCA2LjYxMyAxMjggNi42MTMgNjAuOTYgNjAuOTYgNi42MTQgMTI4IDYuNjE0YzY3LjA0IDAgMTIxLjM4NiA1NC4zNDYgMTIxLjM4NiAxMjEuMzg2IiBmaWxsPSIjRkZGIi8+PHBhdGggZD0iTTE2MC44NjkgNzQuMDYybDUuMTQ1LTE4LjUzN2M1LjI2NC0uNDcgOS4zOTItNC44ODYgOS4zOTItMTAuMjczIDAtNS43LTQuNjItMTAuMzItMTAuMzItMTAuMzJzLTEwLjMyIDQuNjItMTAuMzIgMTAuMzJjMCAzLjc1NSAyLjAxMyA3LjAzIDUuMDEgOC44MzdsLTUuMDUgMTguMTk1Yy0xNC40MzctMy42Ny0yNi42MjUtMy4zOS0yNi42MjUtMy4zOWwtMi4yNTggMS4wMXYxNDAuODcybDIuMjU4Ljc1M2MxMy42MTQgMCA3My4xNzctNDEuMTMzIDczLjMyMy04NS4yNyAwLTMxLjYyNC0yMS4wMjMtNDUuODI1LTQwLjU1NS01Mi4xOTd6TTE0Ni41MyAxNjQuOGMtMTEuNjE3LTE4LjU1Ny02LjcwNi02MS43NTEgMjMuNjQzLTY3LjkyNSA4LjMyLTEuMzMzIDE4LjUwOSA0LjEzNCAyMS41MSAxNi4yNzkgNy41ODIgMjUuNzY2LTM3LjAxNSA2MS44NDUtNDUuMTUzIDUxLjY0NnptMTguMjE2LTM5Ljc1MmE5LjM5OSA5LjM5OSAwIDAgMC05LjM5OSA5LjM5OSA5LjM5OSA5LjM5OSAwIDAgMCA5LjQgOS4zOTkgOS4zOTkgOS4zOTkgMCAwIDAgOS4zOTgtOS40IDkuMzk5IDkuMzk5IDAgMCAwLTkuMzk5LTkuMzk4em0yLjgxIDguNjcyYTIuMzc0IDIuMzc0IDAgMSAxIDAtNC43NDkgMi4zNzQgMi4zNzQgMCAwIDEgMCA0Ljc0OXoiIGZpbGw9IiNFNTcyMDAiLz48cGF0aCBkPSJNMTAxLjM3MSA3Mi43MDlsLTUuMDIzLTE4LjkwMWMyLjg3NC0xLjgzMiA0Ljc4Ni01LjA0IDQuNzg2LTguNzAxIDAtNS43LTQuNjItMTAuMzItMTAuMzItMTAuMzItNS42OTkgMC0xMC4zMTkgNC42Mi0xMC4zMTkgMTAuMzIgMCA1LjY4MiA0LjU5MiAxMC4yODkgMTAuMjY3IDEwLjMxN0w5NS44IDc0LjM3OGMtMTkuNjA5IDYuNTEtNDAuODg1IDIwLjc0Mi00MC44ODUgNTEuODguNDM2IDQ1LjAxIDU5LjU3MiA4NS4yNjcgNzMuMTg2IDg1LjI2N1Y2OC44OTJzLTEyLjI1Mi0uMDYyLTI2LjcyOSAzLjgxN3ptMTAuMzk1IDkyLjA5Yy04LjEzOCAxMC4yLTUyLjczNS0yNS44OC00NS4xNTQtNTEuNjQ1IDMuMDAyLTEyLjE0NSAxMy4xOS0xNy42MTIgMjEuNTExLTE2LjI4IDMwLjM1IDYuMTc1IDM1LjI2IDQ5LjM2OSAyMy42NDMgNjcuOTI2em0tMTguODItMzkuNDZhOS4zOTkgOS4zOTkgMCAwIDAtOS4zOTkgOS4zOTggOS4zOTkgOS4zOTkgMCAwIDAgOS40IDkuNCA5LjM5OSA5LjM5OSAwIDAgMCA5LjM5OC05LjQgOS4zOTkgOS4zOTkgMCAwIDAtOS4zOTktOS4zOTl6bS0yLjgxIDguNjcxYTIuMzc0IDIuMzc0IDAgMSAxIDAtNC43NDggMi4zNzQgMi4zNzQgMCAwIDEgMCA0Ljc0OHoiIGZpbGw9IiNGRjdGMDAiLz48L3N2Zz4=)](https://platformio.org/)
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/k0i05/library/esp_cla.svg)](https://registry.platformio.org/libraries/k0i05/esp_cla)
+[![ESP Component Registry](https://components.espressif.com/components/k0i05/esp_cla/badge.svg)](https://components.espressif.com/components/k0i05/esp_cla)
 
-This directory contains comprehensive unit tests for the ESP32-S3 Compact Linear Algebra (CLA) component. The tests are designed to run using the PlatformIO Unit Testing framework on ESP32-S3 hardware.
+This README documents the public API declared in components/esp_cla/include/vector.h for the ESP-IDF compact linear-algebra (CLA) vector utilities.
 
-Unit Testing is a software testing method by which individual units of
-source code, sets of one or more MCU program modules together with associated
-control data, usage procedures, and operating procedures, are tested to
-determine whether they are fit for use. Unit testing finds problems early
-in the development cycle.
+Header: components/esp_cla/include/vector.h  
+Source: <https://github.com/K0I05/ESP32-S3_CLA_COMPONENT_UNIT_TESTS/blob/4e139b94527ec610f46c432c4cbdc62a1f31e983/components/esp_cla/include/vector.h>
 
-More information about PlatformIO Unit Testing:
+## Overview
 
-- <https://docs.platformio.org/en/latest/advanced/unit-testing/index.html>
+The CLA vector library provides a lightweight vector abstraction and basic vector operations intended for embedded use. The API uses `esp_err_t` return codes (ESP_OK on success). Most operations return newly allocated vectors via output parameters — free them with `cla_vector_delete`.
+
+Primary capabilities:
+
+- Vector lifecycle: create, delete, print
+- Component-wise arithmetic: add, subtract, multiply, divide
+- Products: dot (multi-dimensional), cross (3D)
+- Normalization, scaling, copying
+- Component manipulation: add/delete components
+- Utilities: get/set values, equality/dimension checks, 2D/3D checks
+
+## Key types
+
+- cla_vector_t
+  - uint16_t num_cmps
+  - double *data
+  - bool is_2d
+  - bool is_3d
+
+- cla_vector_ptr_t — pointer to cla_vector_t
+
+## Important notes & constraints
+
+- Header documents a maximum of 128 components.
+- Components are `double` — use caution with memory on embedded devices.
+- Many functions allocate results; always delete returned vectors with `cla_vector_delete`.
+- Dot product API returns a vector in the header (often a single-component vector) — check implementation semantics before assuming it returns a scalar.
+- Cross product is defined for 3-component vectors only.
+- Indexing and sizes use `uint16_t`.
+
+## API quick reference
+
+Lifecycle
+
+- cla_vector_create(uint16_t num_cmps, cla_vector_ptr_t *v)
+- cla_vector_delete(cla_vector_ptr_t v)
+- cla_vector_print(cla_vector_ptr_t v)
+
+Arithmetic
+
+- cla_vector_add, cla_vector_subtract, cla_vector_multiply, cla_vector_divide
+
+Products & normalization
+
+- cla_vector_get_dot_product(const cla_vector_ptr_t v1, const cla_vector_ptr_t v2, cla_vector_ptr_t *v_dot)
+- cla_vector_get_cross_product(const cla_vector_ptr_t v1, const cla_vector_ptr_t v2, cla_vector_ptr_t *v_cross)  // 3D
+- cla_vector_normalize(const cla_vector_ptr_t v, cla_vector_ptr_t *v_normalized)
+- cla_vector_scale(const cla_vector_ptr_t v, double scalar, cla_vector_ptr_t *v_scaled)
+
+Accessors & checks
+
+- cla_vector_copy
+- cla_vector_get_value, cla_vector_set_value
+- cla_vector_set_values, cla_vector_zero_values
+- cla_vector_is_dimension_equal, cla_vector_is_equal (with tolerance)
+- cla_vector_is_empty, cla_vector_is_2d, cla_vector_is_3d
+
+Component manipulation
+
+- cla_vector_add_component
+- cla_vector_delete_component(uint16_t cmp_idx)
+
+Iterator (commented)
+
+- The header contains a commented iterator API sketch (begin, end, next, previous, etc.). That sketch is not required for basic use but can be implemented if needed.
+
+## Example snippet
+
+Create two 3-component vectors, compute dot & cross, normalize, and cleanup:
+
+```c
+cla_vector_ptr_t a = NULL, b = NULL, dot = NULL, cross = NULL, an = NULL;
+
+if (cla_vector_create(3, &a) != ESP_OK) return;
+if (cla_vector_create(3, &b) != ESP_OK) { cla_vector_delete(a); return; }
+
+cla_vector_set_value(0, 1.0, &a);
+cla_vector_set_value(1, 0.0, &a);
+cla_vector_set_value(2, 0.0, &a);
+
+cla_vector_set_value(0, 0.0, &b);
+cla_vector_set_value(1, 1.0, &b);
+cla_vector_set_value(2, 0.0, &b);
+
+if (cla_vector_get_dot_product(a, b, &dot) == ESP_OK) {
+    cla_vector_print(dot); // dot may be returned as a 1-component vector
+    cla_vector_delete(dot);
+}
+
+if (cla_vector_get_cross_product(a, b, &cross) == ESP_OK) {
+    cla_vector_print(cross);
+    cla_vector_delete(cross);
+}
+
+if (cla_vector_normalize(a, &an) == ESP_OK) {
+    cla_vector_print(an);
+    cla_vector_delete(an);
+}
+
+cla_vector_delete(a);
+cla_vector_delete(b);
+```
+
+## Memory & error handling
+
+- Check `esp_err_t` return values on every call.
+- Free all returned vectors with `cla_vector_delete`.
+- `double` component type increases RAM usage — keep vector sizes small when possible.
+- Expect error returns for invalid indices, mismatched dimensions, division-by-zero, or attempts to cross non-3D vectors.
+
+## Best practices & tests
+
+- Always check dimension compatibility before arithmetic operations (use cla_vector_is_dimension_equal).
+- For cross product, ensure vectors have exactly 3 components.
+- For normalization, guard against zero-length vectors.
+- Unit tests to add: dimension mismatch errors, dot/cross product correctness, normalization of unit/non-unit vectors, division-by-zero handling, component add/delete behavior.
 
 ## License
 
-The MIT License (MIT)
-
-## Test Organization
-
-The unit tests are organized into four main test suites:
-
-### 1. `test_cla_matrix/` - Matrix Operations Tests
-
-**File:** `test_cla_matrix.c`
-
-Tests basic matrix operations and decompositions:
-
-- **`test_function_cla_matrix_qr_decomposition`**: Validates QR decomposition algorithms by decomposing matrices into orthogonal (Q) and upper triangular (R) matrices. Verifies that Q·R equals the original matrix.
-- **`test_function_cla_matrix_ref`**: Tests Row Echelon Form (REF) transformation algorithms, ensuring proper row operations are performed.
-- **`test_function_cla_matrix_rref`**: Tests Reduced Row Echelon Form (RREF) transformation algorithms, verifying complete row reduction operations.
-
-**Test Data:** Uses generated datasets from `cla_matrix_qr_decomposition_data.h`, `cla_matrix_ref_data.h`, and `cla_matrix_rref_data.h`.
-
-### 2. `test_cla_matrix_ls/` - Linear System Solver Tests
-
-**File:** `test_cla_matrix_ls.c`
-
-Tests algorithms for solving systems of linear equations:
-
-- **`test_function_cla_matrix_ls_solve_fwd`**: Validates forward substitution for lower triangular systems (Lx = b).
-- **`test_function_cla_matrix_ls_solve_bck`**: Validates backward substitution for upper triangular systems (Ux = b).
-- **`test_function_cla_matrix_ls_solve`**: Tests complete linear system solving (Ax = b) combining multiple algorithms.
-
-**Test Data:** Uses generated datasets from `cla_matrix_ls_solve_fwd_data.h`, `cla_matrix_ls_solve_bck_data.h`, and `cla_matrix_ls_solve_data.h`.
-
-### 3. `test_cla_matrix_lup/` - LUP Decomposition Tests
-
-**File:** `test_cla_matrix_lup.c`
-
-Tests LUP (Lower-Upper-Permutation) decomposition operations:
-
-- **`test_function_cla_matrix_lup_determinant`**: Validates matrix determinant calculations using LUP decomposition.
-- **`test_function_cla_matrix_lup_inverse`**: Tests matrix inversion algorithms via LUP decomposition, verifying that A·A⁻¹ = I.
-- **`test_function_cla_matrix_lup_solve`**: Validates solving linear systems using LUP decomposition methods.
-
-**Test Data:** Uses generated datasets from `cla_matrix_lup_determinant_data.h`, `cla_matrix_lup_inverse_data.h`, and `cla_matrix_lup_solve_data.h`.
-
-### 4. `test_cla_ellipsoid/` - Ellipsoid Fitting & Calibration Tests
-
-**File:** `test_cla_ellipsoid.c`
-
-Tests ellipsoid fitting algorithms commonly used for magnetometer calibration:
-
-- **`test_function_cla_check_hmc5883l_samples_quality`**: Validates the quality check of magnetometer sample data, ensuring samples are distributed adequately for calibration.
-- **`test_function_cla_solve_ellipsoid_coefficients_from_hmc5883l_samples`**: Tests ellipsoid coefficient calculation from HMC5883L magnetometer samples.
-- **`test_function_cla_solve_ellipsoid_coefficients`**: Validates general ellipsoid coefficient solving algorithms.
-- **`test_function_cla_calibration_parameters`**: Tests the extraction of calibration parameters (scale factors and offsets) from ellipsoid coefficients.
-
-**Test Data:** Uses generated datasets from `cla_ellipsoid_fitting_data.h` and `cla_ellipsoid_calibration_data.h`, plus real-world magnetometer sample data.
-
-## Test Configuration
-
-**Tolerance Levels:**
-
-- Small number tolerance: `0.0001` (for most matrix operations)
-- Large number tolerance: `1e-5` (for precise calculations)
-- Ellipsoid/LUP tolerance: `0.05` (for magnetometer-specific algorithms)
-
-## Running the Tests
-
-### Using PlatformIO CLI
-
-```bash
-# Run all tests
-platformio test -vvv --environment esp32s3box
-
-# Run specific test suite
-platformio test -vvv --environment esp32s3box --filter test_cla_matrix
-platformio test -vvv --environment esp32s3box --filter test_cla_matrix_ls
-platformio test -vvv --environment esp32s3box --filter test_cla_matrix_lup
-platformio test -vvv --environment esp32s3box --filter test_cla_ellipsoid
-```
+Refer to the header of vector.h — the code is MIT licensed.
 
 Copyright (c) 2025 Eric Gionet (<gionet.c.eric@gmail.com>)

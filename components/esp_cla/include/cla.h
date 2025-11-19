@@ -43,6 +43,7 @@
 #include <stdbool.h>
 #include <esp_err.h>
 
+#include "cla_version.h"
 #include "matrix.h"
 #include "vector.h"
 
@@ -70,6 +71,35 @@ extern "C" {
 typedef cla_vector_ptr_t cla_ellipsoid_coeffs_t;
 
 typedef cla_vector_ptr_t cla_vector_samples_t[CLA_CAL_SAMPLE_SIZE];
+
+/**
+ * @brief Checks the quality of magnetometer calibration sample data.
+ * 
+ * Evaluates:
+ * 1. Data range coverage (min/max values per axis)
+ * 2. Data distribution (variance per axis)
+ * 3. Sample uniqueness (duplicate detection)
+ * 4. Sphericity check (expected field strength variation)
+ * 
+ * @param v_calib_data Array of calibration sample vectors
+ * @param expected_field_strength Expected magnetic field magnitude (optional, use 0 to skip)
+ * @param quality_report Output structure with quality metrics
+ * @return esp_err_t ESP_OK on success
+ */
+typedef struct cla_calibration_quality_s {
+    double min_x, max_x, range_x;
+    double min_y, max_y, range_y;
+    double min_z, max_z, range_z;
+    double variance_x, variance_y, variance_z;
+    double mean_magnitude;
+    double magnitude_std_dev;
+    uint16_t duplicate_count;
+    uint16_t unique_count;
+    bool has_good_coverage;      // All axes have sufficient range
+    bool has_good_distribution;  // Data is well-distributed
+    bool has_good_uniqueness;    // Low duplicate count
+    uint8_t overall_quality;     // 0-100 score
+} cla_calibration_quality_t;
 
 /**
  * public function & subroutine prototype definitions
@@ -171,6 +201,38 @@ esp_err_t cla_get_calibration_parameters(const cla_vector_ptr_t v_ellip_coeffs, 
  * @return esp_err_t ESP_OK on success.
  */
 esp_err_t cla_apply_calibration(const cla_vector_ptr_t v_raw_data, const cla_vector_ptr_t v_offset, const cla_matrix_ptr_t m_w, cla_vector_ptr_t *const v_cal_data);
+
+/**
+ * @brief Checks the quality of magnetometer calibration sample data.
+ * 
+ * @param v_calib_data Array of calibration sample vectors
+ * @param expected_field_strength Expected magnetic field magnitude (optional, use 0 to skip)
+ * @param quality_report Output structure with quality metrics
+ * @return esp_err_t ESP_OK on success.
+ */
+esp_err_t cla_get_calibration_samples_quality(const cla_vector_samples_t v_calib_data, const double expected_field_strength, cla_calibration_quality_t *quality_report);
+
+/**
+ * @brief Prints the quality metrics of magnetometer calibration sample data.
+ * 
+ * @param quality_report Structure containing quality metrics to print.
+ * @return esp_err_t ESP_OK on success.
+ */
+esp_err_t cla_calibration_samples_quality_print(const cla_calibration_quality_t quality_report);
+
+/**
+ * @brief Converts `cla` firmware version numbers (major, minor, patch) into a string.
+ * 
+ * @return char* `cla` firmware version as a string that is formatted as X.X.X (e.g. 4.0.0).
+ */
+const char* cla_get_fw_version(void);
+
+/**
+ * @brief Converts `cla` firmware version numbers (major, minor, patch) into an integer value.
+ * 
+ * @return int32_t `cla` firmware version number.
+ */
+int32_t cla_get_fw_version_number(void);
 
 
 

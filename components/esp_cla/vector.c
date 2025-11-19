@@ -83,7 +83,7 @@ esp_err_t cla_vector_delete(cla_vector_ptr_t v) {
 
 esp_err_t cla_vector_print(cla_vector_ptr_t v) {
     ESP_ARG_CHECK(v);
-    const char *fmt = "%.4lf\t\t";
+    const char *fmt = "%6.6lf\t";
     printf("\n");
     for(uint16_t i = 0; i < v->num_cmps; i++) {
         printf(fmt, v->data[i]);

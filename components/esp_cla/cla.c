@@ -277,3 +277,177 @@ cleanup:
     cla_vector_delete(centered_data);
     return ret;
 }
+
+esp_err_t cla_get_calibration_samples_quality(const cla_vector_samples_t v_calib_data, const double expected_field_strength, cla_calibration_quality_t *quality_report) {
+    ESP_ARG_CHECK(v_calib_data);
+    
+    memset(quality_report, 0, sizeof(cla_calibration_quality_t));
+    
+    // Initialize min/max
+    quality_report->min_x = quality_report->min_y = quality_report->min_z = DBL_MAX;
+    quality_report->max_x = quality_report->max_y = quality_report->max_z = -DBL_MAX;
+    
+    double sum_x = 0, sum_y = 0, sum_z = 0;
+    double sum_sq_x = 0, sum_sq_y = 0, sum_sq_z = 0;
+    double sum_magnitude = 0;
+    double *magnitudes = malloc(CLA_CAL_SAMPLE_SIZE * sizeof(double));
+    if (!magnitudes) return ESP_ERR_NO_MEM;
+    
+    // Pass 1: Calculate statistics
+    for (uint16_t i = 0; i < CLA_CAL_SAMPLE_SIZE; i++) {
+        if (v_calib_data[i] == NULL || v_calib_data[i]->num_cmps != 3) {
+            free(magnitudes);
+            return ESP_ERR_INVALID_ARG;
+        }
+        
+        const double x = v_calib_data[i]->data[0];
+        const double y = v_calib_data[i]->data[1];
+        const double z = v_calib_data[i]->data[2];
+        
+        // Min/Max
+        if (x < quality_report->min_x) quality_report->min_x = x;
+        if (x > quality_report->max_x) quality_report->max_x = x;
+        if (y < quality_report->min_y) quality_report->min_y = y;
+        if (y > quality_report->max_y) quality_report->max_y = y;
+        if (z < quality_report->min_z) quality_report->min_z = z;
+        if (z > quality_report->max_z) quality_report->max_z = z;
+        
+        // Sums for mean and variance
+        sum_x += x;
+        sum_y += y;
+        sum_z += z;
+        sum_sq_x += x * x;
+        sum_sq_y += y * y;
+        sum_sq_z += z * z;
+        
+        // Magnitude
+        magnitudes[i] = sqrt(x*x + y*y + z*z);
+        sum_magnitude += magnitudes[i];
+    }
+    
+    // Calculate ranges
+    quality_report->range_x = quality_report->max_x - quality_report->min_x;
+    quality_report->range_y = quality_report->max_y - quality_report->min_y;
+    quality_report->range_z = quality_report->max_z - quality_report->min_z;
+    
+    // Calculate means
+    const double mean_x = sum_x / CLA_CAL_SAMPLE_SIZE;
+    const double mean_y = sum_y / CLA_CAL_SAMPLE_SIZE;
+    const double mean_z = sum_z / CLA_CAL_SAMPLE_SIZE;
+    quality_report->mean_magnitude = sum_magnitude / CLA_CAL_SAMPLE_SIZE;
+    
+    // Calculate variances
+    quality_report->variance_x = (sum_sq_x / CLA_CAL_SAMPLE_SIZE) - (mean_x * mean_x);
+    quality_report->variance_y = (sum_sq_y / CLA_CAL_SAMPLE_SIZE) - (mean_y * mean_y);
+    quality_report->variance_z = (sum_sq_z / CLA_CAL_SAMPLE_SIZE) - (mean_z * mean_z);
+    
+    // Calculate magnitude standard deviation
+    double sum_mag_sq_diff = 0;
+    for (uint16_t i = 0; i < CLA_CAL_SAMPLE_SIZE; i++) {
+        double diff = magnitudes[i] - quality_report->mean_magnitude;
+        sum_mag_sq_diff += diff * diff;
+    }
+    quality_report->magnitude_std_dev = sqrt(sum_mag_sq_diff / CLA_CAL_SAMPLE_SIZE);
+    
+    // Check for duplicates (within tolerance)
+    const double duplicate_tolerance = 1.0; // Same reading within 1 unit
+    quality_report->unique_count = CLA_CAL_SAMPLE_SIZE;
+    for (uint16_t i = 0; i < CLA_CAL_SAMPLE_SIZE; i++) {
+        for (uint16_t j = i + 1; j < CLA_CAL_SAMPLE_SIZE; j++) {
+            const double dx = v_calib_data[i]->data[0] - v_calib_data[j]->data[0];
+            const double dy = v_calib_data[i]->data[1] - v_calib_data[j]->data[1];
+            const double dz = v_calib_data[i]->data[2] - v_calib_data[j]->data[2];
+            const double dist = sqrt(dx*dx + dy*dy + dz*dz);
+            
+            if (dist < duplicate_tolerance) {
+                quality_report->duplicate_count++;
+                quality_report->unique_count--;
+                break; // Only count once per sample
+            }
+        }
+    }
+    
+    free(magnitudes);
+    
+    // Quality assessment
+    // 1. Good coverage: Each axis should span at least 80% of expected range
+    const double min_expected_range = quality_report->mean_magnitude * 1.6; // Should span ~2x radius
+    quality_report->has_good_coverage = 
+        (quality_report->range_x >= min_expected_range * 0.8) &&
+        (quality_report->range_y >= min_expected_range * 0.8) &&
+        (quality_report->range_z >= min_expected_range * 0.8);
+    
+    // 2. Good distribution: Variance should be reasonable (not too clustered)
+    const double min_variance = (quality_report->mean_magnitude * quality_report->mean_magnitude) / 4.0;
+    quality_report->has_good_distribution = 
+        (quality_report->variance_x >= min_variance) &&
+        (quality_report->variance_y >= min_variance) &&
+        (quality_report->variance_z >= min_variance);
+    
+    // 3. Good uniqueness: Less than 20% duplicates
+    quality_report->has_good_uniqueness = 
+        (quality_report->duplicate_count < (CLA_CAL_SAMPLE_SIZE / 5));
+    
+    // 4. Calculate overall quality score (0-100)
+    const uint8_t coverage_score = quality_report->has_good_coverage ? 40 : 0;
+    const uint8_t distribution_score = quality_report->has_good_distribution ? 30 : 0;
+    const uint8_t uniqueness_score = quality_report->has_good_uniqueness ? 30 : 0;
+    quality_report->overall_quality = coverage_score + distribution_score + uniqueness_score;
+    
+    ESP_LOGI(TAG, "Calibration Quality Report:");
+    ESP_LOGI(TAG, "  X: [%.2f, %.2f] range=%.2f, var=%.2f", 
+             quality_report->min_x, quality_report->max_x, 
+             quality_report->range_x, quality_report->variance_x);
+    ESP_LOGI(TAG, "  Y: [%.2f, %.2f] range=%.2f, var=%.2f", 
+             quality_report->min_y, quality_report->max_y, 
+             quality_report->range_y, quality_report->variance_y);
+    ESP_LOGI(TAG, "  Z: [%.2f, %.2f] range=%.2f, var=%.2f", 
+             quality_report->min_z, quality_report->max_z, 
+             quality_report->range_z, quality_report->variance_z);
+    ESP_LOGI(TAG, "  Magnitude: mean=%.2f, std_dev=%.2f", 
+             quality_report->mean_magnitude, quality_report->magnitude_std_dev);
+    ESP_LOGI(TAG, "  Samples: %d unique, %d duplicates", 
+             quality_report->unique_count, quality_report->duplicate_count);
+    ESP_LOGI(TAG, "  Coverage: %s, Distribution: %s, Uniqueness: %s",
+             quality_report->has_good_coverage ? "GOOD" : "POOR",
+             quality_report->has_good_distribution ? "GOOD" : "POOR",
+             quality_report->has_good_uniqueness ? "GOOD" : "POOR");
+    ESP_LOGI(TAG, "  Overall Quality: %d/100 %s", 
+             quality_report->overall_quality,
+             quality_report->overall_quality >= 70 ? "(GOOD)" : "(POOR)");
+    
+    return ESP_OK;
+}
+
+esp_err_t cla_calibration_samples_quality_print(const cla_calibration_quality_t quality_report) {
+    printf("Calibration Samples Quality Report:\n");
+    printf("  X: [%.2f, %.2f] range=%.2f, var=%.2f\n", 
+             quality_report.min_x, quality_report.max_x, 
+             quality_report.range_x, quality_report.variance_x);
+    printf("  Y: [%.2f, %.2f] range=%.2f, var=%.2f\n", 
+             quality_report.min_y, quality_report.max_y, 
+             quality_report.range_y, quality_report.variance_y);
+    printf("  Z: [%.2f, %.2f] range=%.2f, var=%.2f\n", 
+             quality_report.min_z, quality_report.max_z, 
+             quality_report.range_z, quality_report.variance_z);
+    printf("  Magnitude: mean=%.2f, std_dev=%.2f\n", 
+             quality_report.mean_magnitude, quality_report.magnitude_std_dev);
+    printf("  Samples: %d unique, %d duplicates\n", 
+             quality_report.unique_count, quality_report.duplicate_count);
+    printf("  Coverage: %s, Distribution: %s, Uniqueness: %s\n",
+             quality_report.has_good_coverage ? "GOOD" : "POOR",
+             quality_report.has_good_distribution ? "GOOD" : "POOR",
+             quality_report.has_good_uniqueness ? "GOOD" : "POOR");
+    printf("  Overall Quality: %d/100 %s\n", 
+             quality_report.overall_quality,
+             quality_report.overall_quality >= 70 ? "(GOOD)" : "(POOR)");
+    return ESP_OK;
+}
+
+const char* cla_get_fw_version(void) {
+    return (const char*)CLA_FW_VERSION_STR;
+}
+
+int32_t cla_get_fw_version_number(void) {
+    return (int32_t)CLA_FW_VERSION_INT32;
+}

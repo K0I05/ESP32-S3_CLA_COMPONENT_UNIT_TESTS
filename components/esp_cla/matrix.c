@@ -150,7 +150,7 @@ static void cla_matrix_jacobi_rotate(cla_matrix_ptr_t a, cla_matrix_ptr_t v, int
         return;
     }
 
-    double tresh, theta, t, c, s;
+    double theta, t, c, s;
     double g = 100.0 * fabs(a->data[p][q]);
 
     if (g > 1e-12) {
@@ -236,7 +236,7 @@ esp_err_t cla_matrix_delete(cla_matrix_ptr_t m) {
 
 esp_err_t cla_matrix_print(cla_matrix_ptr_t m) {
     ESP_ARG_CHECK(m);
-    const char *fmt = "%.4lf\t\t";
+    const char *fmt = "%6.6lf\t";
     printf("\n");
     for(uint16_t i = 0; i < m->num_rows; i++) {
         for(uint16_t j = 0; j < m->num_cols; j++) {
